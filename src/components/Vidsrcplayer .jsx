@@ -85,7 +85,7 @@ export default function VidSrcPlayer({ item, mediaType, onClose }) {
   const year = (details?.release_date || details?.first_air_date || "").split("-")[0];
 
   return (
-    <div className="fixed inset-0 z-[100] bg-[#0d0f14] overflow-y-auto">
+    <div className="fixed inset-0 z-[100] bg-bg-main overflow-y-auto scrollbar-hide">
       <div className="max-w-[1600px] mx-auto p-4 md:p-6 lg:p-8">
         
         {/* ── Header ── */}
@@ -94,7 +94,7 @@ export default function VidSrcPlayer({ item, mediaType, onClose }) {
             {title} {year ? `[${year}]` : ""} {mediaType === "tv" && `S${String(season).padStart(2, "0")}`}
           </h1>
           <div className="flex items-center gap-4">
-            <button className="bg-[#adc5bb] text-gray-900 px-3 py-1.5 md:px-4 md:py-2 rounded-lg font-bold text-sm flex items-center gap-2 hover:bg-[#9cb3a9] transition-colors">
+            <button className="bg-brand text-white px-3 py-1.5 md:px-4 md:py-2 rounded-lg font-bold text-sm flex items-center gap-2 hover:bg-brand-hover transition-colors">
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
               </svg>
@@ -102,7 +102,7 @@ export default function VidSrcPlayer({ item, mediaType, onClose }) {
             </button>
             <button
               onClick={onClose}
-              className="text-gray-400 hover:text-white bg-[#232531] p-2 rounded-lg transition-colors"
+              className="text-gray-400 hover:text-white bg-bg-surface p-2 rounded-lg transition-colors"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -126,6 +126,7 @@ export default function VidSrcPlayer({ item, mediaType, onClose }) {
                 webkitallowfullscreen="true"
                 mozallowfullscreen="true"
                 allow="autoplay; fullscreen; picture-in-picture"
+                sandbox="allow-forms allow-scripts allow-same-origin allow-presentation"
                 frameBorder="0"
                 scrolling="no"
                 title={title}
@@ -133,7 +134,7 @@ export default function VidSrcPlayer({ item, mediaType, onClose }) {
             </div>
 
             {/* Below Player Warning/Report */}
-            <div className="flex justify-between items-center text-xs md:text-sm text-gray-400 bg-[#15171e] px-4 py-3 rounded-lg border border-white/5">
+            <div className="flex justify-between items-center text-xs md:text-sm text-gray-400 bg-bg-surface px-4 py-3 rounded-lg border border-white/5">
               <p>Find any content infringes on your rights, please contact us.</p>
               <button className="flex items-center gap-1 hover:text-white transition-colors">
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -145,7 +146,7 @@ export default function VidSrcPlayer({ item, mediaType, onClose }) {
 
             {/* Movie / Show Details */}
             {details && (
-              <div className="mt-6 bg-[#1a1c24] p-6 rounded-xl border border-white/5">
+              <div className="mt-6 bg-bg-surface p-6 rounded-xl border border-white/5">
                 <div className="flex flex-col md:flex-row gap-6">
                   {details.poster_path && (
                     <img
@@ -159,7 +160,7 @@ export default function VidSrcPlayer({ item, mediaType, onClose }) {
                     
                     <div className="flex flex-wrap gap-3 items-center text-sm text-gray-400 mb-4">
                       {details.vote_average > 0 && (
-                        <span className="flex items-center gap-1 text-[#00e5c4] font-medium">
+                        <span className="flex items-center gap-1 text-brand font-medium">
                           <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                             <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                           </svg>
@@ -194,7 +195,7 @@ export default function VidSrcPlayer({ item, mediaType, onClose }) {
 
           {/* Right: Resources / Episodes Sidebar */}
           <div className="xl:w-80 2xl:w-96 shrink-0">
-            <div className="bg-[#242631] rounded-xl p-5 sticky top-6">
+            <div className="bg-bg-surface rounded-xl p-5 sticky top-6">
               <h3 className="text-gray-100 font-semibold text-lg mb-1">Resources</h3>
               <p className="text-xs text-gray-400 mb-5 flex items-center gap-2">
                 Source: Multiple <span className="w-1 h-1 rounded-full bg-gray-500"></span> By TMDB
@@ -205,7 +206,7 @@ export default function VidSrcPlayer({ item, mediaType, onClose }) {
                 <select 
                   value={language}
                   onChange={(e) => setLanguage(e.target.value)}
-                  className="flex-1 bg-[#323443] text-gray-200 text-sm rounded-lg px-2 py-2.5 outline-none border border-transparent focus:border-[#adc5bb] appearance-none cursor-pointer"
+                  className="flex-1 bg-bg-surface-hover text-gray-200 text-sm rounded-lg px-2 py-2.5 outline-none border border-transparent focus:border-brand appearance-none cursor-pointer"
                 >
                   <option value="Auto">Auto / Dub</option>
                   <option value="Hindi">Hindi Dub</option>
@@ -218,7 +219,7 @@ export default function VidSrcPlayer({ item, mediaType, onClose }) {
                     const found = SERVERS.find(s => s.name === e.target.value);
                     if (found) setActiveServer(found);
                   }}
-                  className="flex-1 bg-[#323443] text-gray-200 text-sm rounded-lg px-2 py-2.5 outline-none border border-transparent focus:border-[#adc5bb] appearance-none cursor-pointer"
+                  className="flex-1 bg-bg-surface-hover text-gray-200 text-sm rounded-lg px-2 py-2.5 outline-none border border-transparent focus:border-brand appearance-none cursor-pointer"
                 >
                   {SERVERS.map(s => (
                     <option key={s.name} value={s.name}>{s.name}</option>
@@ -232,7 +233,7 @@ export default function VidSrcPlayer({ item, mediaType, onClose }) {
                     <select 
                       value={season}
                       onChange={(e) => { setSeason(Number(e.target.value)); setEpisode(1); }}
-                      className="w-full bg-[#323443] text-gray-200 text-sm rounded-lg px-3 py-2.5 outline-none border border-transparent focus:border-[#adc5bb] appearance-none cursor-pointer"
+                      className="w-full bg-bg-surface-hover text-gray-200 text-sm rounded-lg px-3 py-2.5 outline-none border border-transparent focus:border-brand appearance-none cursor-pointer"
                     >
                       {seasons.map(s => (
                         <option key={s.season_number} value={s.season_number}>
@@ -245,11 +246,11 @@ export default function VidSrcPlayer({ item, mediaType, onClose }) {
                   {loadingDetails ? (
                     <div className="grid grid-cols-5 gap-2">
                       {Array.from({ length: 10 }).map((_, i) => (
-                        <div key={i} className="h-10 rounded-lg bg-[#323443] animate-pulse" />
+                        <div key={i} className="h-10 rounded-lg bg-bg-surface-hover animate-pulse" />
                       ))}
                     </div>
                   ) : (
-                    <div className="grid grid-cols-5 gap-2 max-h-[400px] overflow-y-auto pr-1 custom-scrollbar">
+                    <div className="grid grid-cols-5 gap-2 max-h-[400px] overflow-y-auto pr-1 scrollbar-hide">
                       {Array.from({ length: episodeCount }).map((_, i) => {
                         const ep = i + 1;
                         const isActive = episode === ep;
@@ -259,8 +260,8 @@ export default function VidSrcPlayer({ item, mediaType, onClose }) {
                             onClick={() => setEpisode(ep)}
                             className={`h-10 rounded-lg flex justify-center items-center font-medium transition-all ${
                               isActive 
-                                ? 'bg-[#184029] text-[#00e5c4] shadow-inner shadow-black/20' 
-                                : 'bg-[#323443] text-gray-300 hover:bg-[#3d4052] hover:text-white'
+                                ? 'bg-brand/20 text-brand shadow-inner shadow-black/20' 
+                                : 'bg-bg-surface-hover text-gray-300 hover:bg-bg-surface hover:text-white'
                             }`}
                           >
                             {isActive ? (
@@ -279,7 +280,7 @@ export default function VidSrcPlayer({ item, mediaType, onClose }) {
                   )}
                 </>
               ) : (
-                <div className="bg-[#184029] text-[#00e5c4] px-4 py-3 rounded-lg text-center font-medium shadow-inner shadow-black/20 flex items-center justify-center gap-2">
+                <div className="bg-brand/20 text-brand px-4 py-3 rounded-lg text-center font-medium shadow-inner shadow-black/20 flex items-center justify-center gap-2">
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -292,24 +293,6 @@ export default function VidSrcPlayer({ item, mediaType, onClose }) {
 
         </div>
       </div>
-      
-      {/* Scrollbar styling for the episode list */}
-      <style>{`
-        .custom-scrollbar::-webkit-scrollbar {
-          width: 6px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-track {
-          background: #242631;
-          border-radius: 4px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-          background: #3d4052;
-          border-radius: 4px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-          background: #4a4d62;
-        }
-      `}</style>
     </div>
   );
 }

@@ -17,6 +17,7 @@ import TopBar from "../components/TopBar";
 import HeroSlider from "../components/HeroSlider";
 import MediaRow from "../components/MediaRow";
 import MovieCard from "../components/MovieCard";
+import Breadcrumbs from "../components/Breadcrumbs";
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState("Movies");
@@ -28,6 +29,7 @@ export default function Home() {
   const [searchPage, setSearchPage] = useState(1);
   const [hasMoreSearch, setHasMoreSearch] = useState(false);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [searchFilterTab, setSearchFilterTab] = useState("All");
 
   // Explore infinite scroll states
   const [exploreResults, setExploreResults] = useState([]);
@@ -183,11 +185,11 @@ export default function Home() {
 
 
   return (
-    <div className="min-h-screen bg-[#13151f]">
+    <div className="min-h-screen bg-bg-main">
       <Helmet>
-        <title>TinyMoviez - Best Movies & TV Shows</title>
-        <meta name="description" content="Watch the latest movies, TV shows, and anime online for free on TinyMoviez. Discover popular and trending content." />
-        <meta property="og:title" content="TinyMoviez - Best Movies & TV Shows" />
+        <title>Havtic Movie - Best Movies & TV Shows</title>
+        <meta name="description" content="Watch the latest movies, TV shows, and anime online for free on Havtic Movie. Discover popular and trending content." />
+        <meta property="og:title" content="Havtic Movie - Best Movies & TV Shows" />
         <meta property="og:description" content="Watch the latest movies, TV shows, and anime online for free." />
       </Helmet>
 
@@ -200,33 +202,60 @@ export default function Home() {
         />
 
         {showSearch ? (
-          <section>
-            <h3 className="text-white font-bold text-lg mb-4">
-              Results for <span className="text-[#00e5c4]">"{search}"</span>
-            </h3>
+          <section className="animate-fade-in">
+            <Breadcrumbs paths={[{ label: `Search results for "${search}"` }]} />
+
+            <h1 className="text-white font-black text-2xl md:text-3xl uppercase tracking-tighter mb-8">
+              Search Results for <span className="text-brand">{search}</span>
+            </h1>
+
+            {/* Filter Tabs (Pills) */}
+            <div className="flex flex-wrap gap-2 mb-10">
+              {["All", "Series", "Movies", "Music"].map((tab) => (
+                <button
+                  key={tab}
+                  onClick={() => setSearchFilterTab(tab)}
+                  className={`px-6 py-2.5 rounded-full text-sm font-bold transition-all duration-200 border ${
+                    searchFilterTab === tab
+                      ? "bg-white text-black border-white shadow-lg shadow-white/10"
+                      : "bg-bg-surface text-gray-400 border-white/5 hover:border-white/20 hover:text-white"
+                  }`}
+                >
+                  {tab}
+                </button>
+              ))}
+            </div>
             {searching && searchPage === 1 ? (
               <div className="grid grid-cols-[repeat(auto-fill,minmax(140px,1fr))] sm:grid-cols-[repeat(auto-fill,minmax(160px,1fr))] md:grid-cols-[repeat(auto-fill,minmax(180px,1fr))] gap-3 md:gap-4">
                 {Array.from({ length: 14 }).map((_, i) => (
                   <div
                     key={i}
-                    className="w-full aspect-2/3 rounded-2xl bg-[#1a1d27] animate-pulse"
+                    className="w-full aspect-2/3 rounded-2xl bg-bg-surface animate-pulse"
                   />
                 ))}
               </div>
             ) : searchResults.length > 0 || exploreResults.length > 0 ? (
               <>
                 <div className="grid grid-cols-[repeat(auto-fill,minmax(140px,1fr))] sm:grid-cols-[repeat(auto-fill,minmax(160px,1fr))] md:grid-cols-[repeat(auto-fill,minmax(180px,1fr))] gap-3 md:gap-4">
-                  {searchResults.map((item, index) => {
-                    const isLast = exploreResults.length === 0 && index === searchResults.length - 1;
-                    return (
-                      <div ref={isLast ? lastElementRef : null} key={`search-${item.id}`}>
-                        <MovieCard
-                          item={item}
-                          mediaType={item.media_type || mediaType}
-                        />
-                      </div>
-                    );
-                  })}
+                  {searchResults
+                    .filter(item => {
+                      if (searchFilterTab === "All") return true;
+                      if (searchFilterTab === "Movies") return item.media_type === "movie";
+                      if (searchFilterTab === "Series") return item.media_type === "tv";
+                      if (searchFilterTab === "Music") return false; // Music not supported by TMDB search
+                      return true;
+                    })
+                    .map((item, index) => {
+                      const isLast = exploreResults.length === 0 && index === searchResults.length - 1;
+                      return (
+                        <div ref={isLast ? lastElementRef : null} key={`search-${item.id}`}>
+                          <MovieCard
+                            item={item}
+                            mediaType={item.media_type || mediaType}
+                          />
+                        </div>
+                      );
+                    })}
                   
                   
                   {exploreResults.map((item, index) => {
@@ -244,7 +273,7 @@ export default function Home() {
                 
                 {isLoadingMore && (
                   <div className="flex justify-center py-6 w-full">
-                    <div className="w-8 h-8 border-4 border-gray-600 border-t-[#00e5c4] rounded-full animate-spin"></div>
+                    <div className="w-8 h-8 border-4 border-white/10 border-t-brand rounded-full animate-spin"></div>
                   </div>
                 )}
               </>
@@ -274,7 +303,7 @@ export default function Home() {
               mediaType={mediaType}
             />
             <MediaRow
-              title="Popular on TinyMoviez"
+              title="Popular on Havtic Movie"
               items={popular}
               mediaType={mediaType}
               loading={loading}
@@ -310,7 +339,7 @@ export default function Home() {
               
               {isLoadingMore && (
                 <div className="flex justify-center py-6 w-full mt-4">
-                  <div className="w-8 h-8 border-4 border-gray-600 border-t-[#00e5c4] rounded-full animate-spin"></div>
+                  <div className="w-8 h-8 border-4 border-white/10 border-t-brand rounded-full animate-spin"></div>
                 </div>
               )}
             </div>

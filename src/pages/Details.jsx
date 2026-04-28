@@ -3,41 +3,21 @@ import { useParams, useNavigate, Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { getTVShowDetails, getMovieDetails } from "../api/api";
 import MovieCard from "../components/MovieCard";
+import Player from "../components/Player";
+import { useAuth } from "../context/AuthContext";
+import Breadcrumbs from "../components/Breadcrumbs";
 
-const SERVERS = [
-  {
-    name: "Server 1",
-    getUrl: (type, id, s, e) =>
-      type === "movie"
-        ? `https://vsembed.su/embed/movie?tmdb=${id}`
-        : `https://vsembed.su/embed/tv?tmdb=${id}&season=${s}&episode=${e}`,
-  },
-  {
-    name: "Server 2",
-    getUrl: (type, id, s, e) =>
-      type === "movie"
-        ? `https://vidsrc.cc/v2/embed/movie/${id}`
-        : `https://vidsrc.cc/v2/embed/tv/${id}/${s}/${e}`,
-  },
-  {
-    name: "Server 3",
-    getUrl: (type, id, s, e) =>
-      type === "movie"
-        ? `https://multiembed.mov/?video_id=${id}&tmdb=1`
-        : `https://multiembed.mov/?video_id=${id}&tmdb=1&s=${s}&e=${e}`,
-  },
-];
 
 export default function Watch() {
   const { mediaType, id } = useParams();
   const navigate = useNavigate();
+  const { user, addToWatchlist, removeFromWatchlist, addToCompleted, removeFromCompleted } = useAuth();
 
   const [season, setSeason] = useState(1);
   const [episode, setEpisode] = useState(1);
   const [details, setDetails] = useState(null);
   const [loadingDetails, setLoadingDetails] = useState(false);
   
-  const [activeServer, setActiveServer] = useState(SERVERS[0]);
   const playerContainerRef = useRef(null);
 
   // Keyboard shortcuts (Fullscreen)
@@ -77,58 +57,140 @@ export default function Watch() {
 
   const title = details?.name || details?.title || "Loading...";
 
-  const embedSrc = activeServer.getUrl(mediaType, id, season, episode);
-
   const seasons = details?.seasons?.filter((s) => s.season_number > 0) || [];
   const currentSeason = seasons.find((s) => s.season_number === season);
   const episodeCount = currentSeason?.episode_count || 1;
 
   const year = (details?.release_date || details?.first_air_date || "").split("-")[0];
 
+  const numericId = Number(id);
+  const inWatchlist = user?.watchlist?.some(w => Number(w.id) === numericId);
+  const inCompleted = user?.completed?.some(c => Number(c.id) === numericId);
+
+  const handleWatchlist = () => {
+    if (!user) return navigate("/login");
+    if (inWatchlist) {
+      removeFromWatchlist(numericId);
+    } else {
+      addToWatchlist({
+        id: numericId,
+        title: details.title || null,
+        name: details.name || null,
+        poster_path: details.poster_path,
+        media_type: mediaType,
+        vote_average: details.vote_average,
+        release_date: details.release_date || null,
+        first_air_date: details.first_air_date || null
+      });
+    }
+  };
+
+  const handleCompleted = () => {
+    if (!user) return navigate("/login");
+    if (inCompleted) {
+      removeFromCompleted(numericId);
+    } else {
+      addToCompleted({
+        id: numericId,
+        title: details.title || null,
+        name: details.name || null,
+        poster_path: details.poster_path,
+        media_type: mediaType,
+        vote_average: details.vote_average,
+        release_date: details.release_date || null,
+        first_air_date: details.first_air_date || null
+      });
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-[#0d0f14] text-white overflow-x-hidden">
-      <Helmet>
-        <title>{title} - Watch on TinyMoviez</title>
-        <meta name="description" content={details?.overview || `Watch ${title} online for free in high quality.`} />
-        <meta property="og:title" content={`${title} - Watch on TinyMoviez`} />
-        <meta property="og:description" content={details?.overview || `Watch ${title} online for free.`} />
-        {details?.poster_path && <meta property="og:image" content={`https://image.tmdb.org/t/p/w500${details.poster_path}`} />}
-      </Helmet>
+    <div className="text-white">
+      {details && (
+        <Helmet>
+          <title>{title} - Watch on Havtic Movie</title>
+          <meta name="description" content={details?.overview || `Watch ${title} online for free in high quality.`} />
+          <meta property="og:title" content={`${title} - Watch on Havtic Movie`} />
+          <meta property="og:description" content={details?.overview || `Watch ${title} online for free.`} />
+          {details?.poster_path && <meta property="og:image" content={`https://image.tmdb.org/t/p/w500${details.poster_path}`} />}
+        </Helmet>
+      )}
       <div className="w-full p-4 md:p-6 lg:p-10">
         
+        {/* Breadcrumbs */}
+        <div className="max-w-[1800px] mx-auto px-1">
+          <Breadcrumbs 
+            paths={[
+              { label: mediaType === "movie" ? "Movies" : "Series", link: "/" },
+              { label: title }
+            ]} 
+          />
+        </div>
+
         {/* ── Header ── */}
-        <div className="flex items-center justify-between mb-6 max-w-[1800px] mx-auto border-b border-white/5 pb-4">
-          <h1 className="text-gray-300 text-sm md:text-base font-medium">
+        <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 max-w-[1800px] mx-auto border-b border-white/5 pb-6 gap-4">
+          <h1 className="text-gray-300 text-sm md:text-xl font-black uppercase tracking-tight">
             {title} {mediaType === "tv" && `[S${String(season).padStart(2, "0")} E${String(episode).padStart(2, "0")}]`}
           </h1>
-          <button className="bg-[#adc5bb] text-gray-900 px-4 py-2 rounded-lg font-bold text-xs flex items-center gap-2 hover:bg-[#9cb3a9] transition-colors">
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
-            </svg>
-            Download App
-          </button>
+          
+          <div className="flex flex-wrap items-center gap-3">
+             <button 
+               onClick={handleWatchlist}
+               className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-widest transition-all border cursor-pointer ${
+                 inWatchlist 
+                   ? "bg-brand/10 border-brand/30 text-brand" 
+                   : "bg-bg-surface border-white/5 text-gray-400 hover:text-white"
+               }`}
+             >
+               <svg className="w-4 h-4" fill={inWatchlist ? "currentColor" : "none"} stroke="currentColor" viewBox="0 0 24 24">
+                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+               </svg>
+               {inWatchlist ? "In Watchlist" : "Add Watchlist"}
+             </button>
+
+             <button 
+               onClick={handleCompleted}
+               className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-widest transition-all border cursor-pointer ${
+                 inCompleted 
+                   ? "bg-green-500/10 border-green-500/30 text-green-500" 
+                   : "bg-bg-surface border-white/5 text-gray-400 hover:text-white"
+               }`}
+             >
+               <svg className="w-4 h-4" fill={inCompleted ? "currentColor" : "none"} stroke="currentColor" viewBox="0 0 24 24">
+                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+               </svg>
+               {inCompleted ? "Watched" : "Mark Finished"}
+             </button>
+
+             <div className="w-[1px] h-6 bg-white/10 hidden sm:block mx-1"></div>
+
+             <button className="bg-brand text-white px-5 py-2 rounded-xl font-black text-xs flex items-center gap-2 hover:bg-brand-hover transition-all shadow-lg shadow-brand/20 cursor-pointer">
+               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
+               </svg>
+               App
+             </button>
+          </div>
         </div>                {/* ── Top Area: Player + Server Sidebar ── */}
         <div className="flex flex-col xl:flex-row gap-6 mb-8 max-w-[1800px] mx-auto">
           
           {/* Left: Video Player */}
           <div className="flex-1 flex flex-col gap-2">
             {/* Player Container */}
-            <div ref={playerContainerRef} className="relative w-full bg-black rounded-lg overflow-hidden shadow-2xl group" style={{ paddingTop: "56.25%" }}>
-              <iframe
-                key={embedSrc}
-                src={embedSrc}
-                className="absolute inset-0 w-full h-full"
-                allowFullScreen
-                frameBorder="0"
-                scrolling="no"
-                title={title}
+            <div ref={playerContainerRef} className="relative w-full bg-black rounded-lg overflow-hidden shadow-2xl group">
+              <Player 
+                imdbId={id} 
+                type={mediaType} 
+                season={season} 
+                episode={episode} 
+                title={title} 
               />
             </div>
 
+
             {/* Below Player Warning/Report */}
-            <div className="flex justify-between items-center text-xs md:text-sm text-gray-400 bg-[#15171e] px-4 py-3 rounded-lg border border-white/5">
+            <div className="flex justify-between items-center text-xs md:text-sm text-gray-400 bg-bg-surface px-4 py-3 rounded-lg border border-white/5">
               <p>Find any content infringes on your rights, please contact us.</p>
-              <button className="flex items-center gap-1 hover:text-white transition-colors">
+              <button className="flex items-center gap-1 hover:text-white transition-colors cursor-pointer">
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                 </svg>
@@ -139,32 +201,11 @@ export default function Watch() {
 
           {/* Right: Resources / Episodes Sidebar */}
           <div className="xl:w-[400px] shrink-0">
-            <div className="bg-[#1c1e26] rounded-xl p-6 border border-white/5 h-full">
-              <h3 className="text-gray-100 font-bold text-xl mb-1">Resources</h3>
+            <div className="bg-bg-surface rounded-xl p-6 border border-white/5 h-full">
+              <h3 className="text-gray-100 font-bold text-xl mb-1">Playlist</h3>
               <p className="text-[10px] text-gray-500 mb-6 uppercase tracking-widest font-semibold">
-                Source: Multiple Servers | By TinyMoviez
+                Source: Havtic Player | Premium
               </p>
-
-              {/* Server Selector */}
-              <div className="mb-6">
-                <div className="relative">
-                  <select 
-                    value={activeServer.name}
-                    onChange={(e) => {
-                      const found = SERVERS.find(s => s.name === e.target.value);
-                      if (found) setActiveServer(found);
-                    }}
-                    className="w-full bg-[#2a2d3a] text-gray-200 text-xs rounded-lg px-4 py-3 outline-none border border-white/5 focus:border-[#adc5bb] appearance-none cursor-pointer"
-                  >
-                    {SERVERS.map(s => (
-                      <option key={s.name} value={s.name}>{s.name}</option>
-                    ))}
-                  </select>
-                  <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-500">
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7" /></svg>
-                  </div>
-                </div>
-              </div>
 
               {mediaType === "tv" ? (
                 <>
@@ -172,7 +213,7 @@ export default function Watch() {
                     <select 
                       value={season}
                       onChange={(e) => { setSeason(Number(e.target.value)); setEpisode(1); }}
-                      className="w-full bg-[#323443] text-gray-200 text-sm rounded-lg px-3 py-2.5 outline-none border border-transparent focus:border-[#adc5bb] appearance-none cursor-pointer"
+                      className="w-full bg-bg-surface-hover text-gray-200 text-sm rounded-lg px-3 py-2.5 outline-none border border-transparent focus:border-brand appearance-none cursor-pointer"
                     >
                       {seasons.map(s => (
                         <option key={s.season_number} value={s.season_number}>
@@ -185,11 +226,11 @@ export default function Watch() {
                   {loadingDetails ? (
                     <div className="grid grid-cols-5 gap-2">
                       {Array.from({ length: 10 }).map((_, i) => (
-                        <div key={i} className="h-10 rounded-lg bg-[#323443] animate-pulse" />
+                        <div key={i} className="h-10 rounded-lg bg-bg-surface-hover animate-pulse" />
                       ))}
                     </div>
                   ) : (
-                    <div className="grid grid-cols-5 gap-2 max-h-[400px] overflow-y-auto pr-1 custom-scrollbar">
+                    <div className="grid grid-cols-5 gap-2 max-h-[400px] overflow-y-auto pr-1 scrollbar-hide">
                       {Array.from({ length: episodeCount }).map((_, i) => {
                         const ep = i + 1;
                         const isActive = episode === ep;
@@ -197,10 +238,10 @@ export default function Watch() {
                           <button
                             key={ep}
                             onClick={() => setEpisode(ep)}
-                            className={`h-10 rounded-lg flex justify-center items-center font-medium transition-all ${
+                            className={`h-10 rounded-lg flex justify-center items-center font-medium transition-all cursor-pointer ${
                               isActive 
-                                ? 'bg-[#184029] text-[#00e5c4] shadow-inner shadow-black/20' 
-                                : 'bg-[#323443] text-gray-300 hover:bg-[#3d4052] hover:text-white'
+                                ? 'bg-brand/20 text-brand shadow-inner shadow-black/20' 
+                                : 'bg-bg-surface-hover text-gray-300 hover:bg-bg-surface hover:text-white'
                             }`}
                           >
                             {isActive ? (
@@ -219,8 +260,8 @@ export default function Watch() {
                   )}
                 </>
               ) : (
-                <div className="bg-[#184029] text-[#00e5c4] px-4 py-4 rounded-lg text-center font-bold text-xs shadow-inner shadow-black/20 flex items-center justify-center gap-3 border border-[#00e5c4]/10">
-                  <div className="w-2 h-2 rounded-full bg-[#00e5c4] animate-pulse"></div>
+                <div className="bg-brand/20 text-brand px-4 py-4 rounded-lg text-center font-bold text-xs shadow-inner shadow-black/20 flex items-center justify-center gap-3 border border-brand/10">
+                  <div className="w-2 h-2 rounded-full bg-brand animate-pulse"></div>
                   {title} {details?.original_language === 'hi' ? '[Hindi]' : ''}
                 </div>
               )}
@@ -232,7 +273,7 @@ export default function Watch() {
         {details && (
           <div className="flex flex-col gap-8 max-w-[1800px] mx-auto">
             {/* Banner */}
-            <div className="bg-[#15171e] p-4 md:p-6 rounded-xl border border-white/5 relative overflow-hidden flex flex-col md:flex-row gap-6">
+            <div className="bg-bg-surface p-4 md:p-6 rounded-xl border border-white/5 relative overflow-hidden flex flex-col md:flex-row gap-6">
               {details.poster_path && (
                 <img
                   src={`https://image.tmdb.org/t/p/w300${details.poster_path}`}
@@ -273,7 +314,7 @@ export default function Watch() {
                   {details.vote_average > 0 && (
                     <div className="text-right shrink-0">
                       <div className="text-4xl font-bold text-white flex items-center justify-end gap-1">
-                        <svg className="w-8 h-8 text-[#f5c518]" fill="currentColor" viewBox="0 0 20 20">
+                        <svg className="w-8 h-8 text-brand" fill="currentColor" viewBox="0 0 20 20">
                           <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                         </svg>
                         <span>{details.vote_average.toFixed(1)}</span>
@@ -300,18 +341,18 @@ export default function Watch() {
               )}
             </div>
 
-            <div className="flex flex-col xl:flex-row gap-8">
+            <div className="flex flex-col gap-8">
               
               {/* Cast */}
               <div className="flex-1 min-w-0 overflow-hidden">
-                <h3 className="text-xl font-bold text-white mb-4 flex items-center border-l-4 border-[#f5c518] pl-2">
+                <h3 className="text-xl font-bold text-white mb-4 flex items-center border-l-4 border-brand pl-2">
                   Top Cast <span className="text-gray-500 text-sm font-normal ml-2">({details.credits?.cast?.length || 0})</span>
                 </h3>
                 
-                <div className="flex gap-4 overflow-x-auto pb-4 custom-scrollbar snap-x">
+                <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide snap-x">
                   {details.credits?.cast?.slice(0, 15).map(actor => (
                     <div key={actor.id} className="w-28 md:w-32 shrink-0 snap-start">
-                      <div className="w-full aspect-[2/3] bg-[#232531] rounded-lg overflow-hidden mb-2">
+                      <div className="w-full aspect-[2/3] bg-bg-surface-hover rounded-lg overflow-hidden mb-2">
                         {actor.profile_path ? (
                           <img 
                             src={`https://image.tmdb.org/t/p/w185${actor.profile_path}`} 
@@ -336,17 +377,17 @@ export default function Watch() {
               </div>
 
               {/* More Like This */}
-              <div className="xl:w-[350px] shrink-0">
-                <h3 className="text-xl font-bold text-white mb-4 flex items-center border-l-4 border-[#f5c518] pl-2">
+              <div className="min-w-0">
+                <h3 className="text-xl font-bold text-white mb-4 flex items-center border-l-4 border-brand pl-2">
                   More like this
                 </h3>
                 
-                <div className="grid grid-cols-2 gap-3 sm:gap-4">
-                  {details.recommendations?.results?.slice(0, 4).map(item => (
+                <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-6 md:gap-8">
+                  {details.recommendations?.results?.slice(0, 12).map(item => (
                     <MovieCard key={item.id} item={item} mediaType={mediaType} />
                   ))}
                   {(!details.recommendations?.results || details.recommendations.results.length === 0) && (
-                    <p className="text-gray-500 text-sm col-span-2">No recommendations available.</p>
+                    <p className="text-gray-500 text-sm col-span-full">No recommendations available.</p>
                   )}
                 </div>
               </div>
@@ -354,23 +395,6 @@ export default function Watch() {
             </div>
           </div>
         )}
-
-      <style>{`
-        .custom-scrollbar::-webkit-scrollbar {
-          width: 6px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-track {
-          background: #242631;
-          border-radius: 4px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-          background: #3d4052;
-          border-radius: 4px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-          background: #4a4d62;
-        }
-      `}</style>
       </div>
     </div>
   );

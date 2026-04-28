@@ -1,14 +1,17 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
 const BACKDROP_BASE = "https://image.tmdb.org/t/p/w1280";
 
 /* ══════════════════════════════
    HERO SLIDER
-══════════════════════════════ */
-export default function HeroSlider({ items, mediaType, onWatch }) {
+   ══════════════════════════════ */
+export default function HeroSlider({ items, mediaType }) {
   const [current, setCurrent] = useState(0);
   const timerRef = useRef(null);
+  const navigate = useNavigate();
+  const { user, addToWatchlist, removeFromWatchlist } = useAuth();
 
   const startTimer = useCallback(() => {
     clearInterval(timerRef.current);
@@ -30,7 +33,7 @@ export default function HeroSlider({ items, mediaType, onWatch }) {
 
   if (!items.length) {
     return (
-      <div className="w-full h-64 md:h-80 lg:h-96 rounded-2xl bg-[#1a1d27] animate-pulse" />
+      <div className="w-full h-64 md:h-80 lg:h-96 rounded-2xl bg-bg-surface animate-pulse" />
     );
   }
 
@@ -40,57 +43,94 @@ export default function HeroSlider({ items, mediaType, onWatch }) {
     : null;
   const title = item.name || item.title || "";
 
+  const inWatchlist = user?.watchlist?.some(w => Number(w.id) === Number(item.id));
+
+  const handleWatchlist = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!user) return navigate("/login");
+    
+    if (inWatchlist) {
+      removeFromWatchlist(Number(item.id));
+    } else {
+      addToWatchlist({
+        id: Number(item.id),
+        title: item.title || null,
+        name: item.name || null,
+        poster_path: item.poster_path,
+        media_type: mediaType || item.media_type,
+        vote_average: item.vote_average,
+        release_date: item.release_date || null,
+        first_air_date: item.first_air_date || null
+      });
+    }
+  };
+
   return (
-    <div className="relative rounded-2xl overflow-hidden h-64 md:h-80 lg:h-[800px] select-none">
+    <div className="relative rounded-2xl overflow-hidden h-64 md:h-96 lg:h-[75vh] min-h-[400px] select-none shadow-2xl">
       {backdrop ? (
         <img
           key={current}
           src={backdrop}
           alt={title}
-          className="absolute inset-0 w-full h-full object-cover"
+          className="absolute inset-0 w-full h-full object-cover animate-in fade-in zoom-in-110 duration-1000"
         />
       ) : (
-        <div className="absolute inset-0 bg-gradient-to-br-from-teal-900 to-slate-900" />
+        <div className="absolute inset-0 bg-gradient-to-br from-bg-surface to-bg-main" />
       )}
 
-      <div className="absolute inset-0 bg-gradient-to-r-from-[#13151f]/95 via-[#13151f]/50 to-transparent" />
-      <div className="absolute inset-0 bg-gradient-to-t-from-[#13151f]/90 via-transparent to-transparent" />
+      <div className="absolute inset-0 bg-gradient-to-r from-bg-main/95 via-bg-main/50 to-transparent" />
+      <div className="absolute inset-0 bg-gradient-to-t from-bg-main/90 via-transparent to-transparent" />
 
-      <div className="absolute inset-0 flex flex-col justify-end p-5 md:p-8">
+      <div className="absolute inset-0 flex flex-col justify-end p-5 md:p-12">
         <h2 
-          className="text-white font-black text-3xl md:text-5xl lg:text-6xl mb-3 max-w-2xl leading-tight"
-          style={{ textShadow: '0px 0px 20px rgba(0,0,0,0.9), 0px 0px 10px rgba(0,0,0,0.9)' }}
+          className="text-white font-black text-3xl md:text-5xl lg:text-7xl mb-4 max-w-3xl leading-tight animate-reveal"
+          style={{ textShadow: '0px 0px 20px rgba(0,0,0,0.5)' }}
         >
           {title}
         </h2>
         {item.overview && (
           <p 
-            className="text-gray-100 text-xs md:text-base mb-6 max-w-2xl line-clamp-3 hidden md:block font-medium"
-            style={{ textShadow: '1px 1px 8px rgba(0,0,0,1)' }}
+            className="text-gray-200 text-xs md:text-lg mb-8 max-w-2xl line-clamp-3 hidden md:block font-medium animate-fade-up"
+            style={{ animationDelay: '0.1s' }}
           >
             {item.overview}
           </p>
         )}
 
-        <div className="flex items-center gap-3 flex-wrap">
-          <button className="flex items-center gap-1.5 bg-white/10 backdrop-blur-sm border border-white/20 text-white text-sm font-semibold px-4 py-2 rounded-xl hover:bg-white/20 transition-colors">
+        <div className="flex items-center gap-4 flex-wrap animate-fade-up" style={{ animationDelay: '0.2s' }}>
+          <button 
+            onClick={handleWatchlist}
+            className={`flex items-center gap-2 backdrop-blur-md border px-6 py-3 rounded-xl transition-all cursor-pointer text-sm font-black uppercase tracking-widest ${
+              inWatchlist 
+                ? "bg-brand/20 border-brand/40 text-brand" 
+                : "bg-white/5 border-white/10 text-white hover:bg-white/10 hover:border-white/20"
+            }`}
+          >
             <svg
-              className="w-4 h-4"
-              fill="none"
+              className="w-5 h-5"
+              fill={inWatchlist ? "currentColor" : "none"}
               stroke="currentColor"
               viewBox="0 0 24 24"
             >
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                strokeWidth={2}
-                d="M12 4v16m8-8H4"
+                strokeWidth={2.5}
+                d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"
               />
             </svg>
-            Watchlist
+            {inWatchlist ? "In Watchlist" : "Watchlist"}
           </button>
 
-          <div className="flex gap-1.5">
+          <Link
+            to={`/details/${mediaType || item.media_type || "movie"}/${item.id}/${title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)+/g, "")}`}
+            className="bg-brand text-white font-black text-sm uppercase tracking-widest px-8 py-3 rounded-xl hover:bg-brand-hover transition-all shadow-xl shadow-brand/30 cursor-pointer"
+          >
+            Watch Now
+          </Link>
+
+          <div className="flex gap-2 ml-4">
             {items.map((_, i) => (
               <button
                 key={i}
@@ -98,30 +138,23 @@ export default function HeroSlider({ items, mediaType, onWatch }) {
                   setCurrent(i);
                   startTimer();
                 }}
-                className={`rounded-full transition-all duration-300 ${
+                className={`rounded-full transition-all duration-500 cursor-pointer ${
                   i === current
-                    ? "w-6 h-2 bg-[#00e5c4]"
-                    : "w-2 h-2 bg-white/30 hover:bg-white/50"
+                    ? "w-8 h-2 bg-brand shadow-lg shadow-brand/50"
+                    : "w-2 h-2 bg-white/20 hover:bg-white/40"
                 }`}
               />
             ))}
           </div>
-
-          <Link
-            to={`/details/${mediaType}/${item.id}/${title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)+/g, "")}`}
-            className="ml-auto bg-[#00e5c4] text-[#13151f] font-extrabold text-sm px-6 py-2 rounded-xl hover:bg-[#00cdb0] transition-colors shadow-lg shadow-[#00e5c4]/25"
-          >
-            Watch Now
-          </Link>
         </div>
       </div>
 
       <button
         onClick={() => go(-1)}
-        className="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-xl bg-black/40 backdrop-blur-sm text-white flex items-center justify-center hover:bg-black/70 transition-colors"
+        className="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-2xl bg-black/20 backdrop-blur-md text-white flex items-center justify-center hover:bg-brand/80 transition-all cursor-pointer border border-white/5 hover:border-brand/50 group shadow-2xl"
       >
         <svg
-          className="w-4 h-4"
+          className="w-6 h-6 transition-transform group-hover:-translate-x-0.5"
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -129,17 +162,17 @@ export default function HeroSlider({ items, mediaType, onWatch }) {
           <path
             strokeLinecap="round"
             strokeLinejoin="round"
-            strokeWidth={2}
+            strokeWidth={2.5}
             d="M15 19l-7-7 7-7"
           />
         </svg>
       </button>
       <button
         onClick={() => go(1)}
-        className="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-xl bg-black/40 backdrop-blur-sm text-white flex items-center justify-center hover:bg-black/70 transition-colors"
+        className="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-2xl bg-black/20 backdrop-blur-md text-white flex items-center justify-center hover:bg-brand/80 transition-all cursor-pointer border border-white/5 hover:border-brand/50 group shadow-2xl"
       >
         <svg
-          className="w-4 h-4"
+          className="w-6 h-6 transition-transform group-hover:translate-x-0.5"
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -147,7 +180,7 @@ export default function HeroSlider({ items, mediaType, onWatch }) {
           <path
             strokeLinecap="round"
             strokeLinejoin="round"
-            strokeWidth={2}
+            strokeWidth={2.5}
             d="M9 5l7 7-7 7"
           />
         </svg>

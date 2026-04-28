@@ -1,11 +1,11 @@
-const API_KEY = import.meta.env.VITE_TMDB_API_KEY;
-const BASE_URL = import.meta.env.VITE_BASE_URL;
+// Point to our backend proxy instead of direct TMDB
+const BASE_URL = "/api/tmdb"; 
 
 // ── Generic fetcher ──
 const tmdbFetch = async (path, params = {}) => {
-  const url = new URL(`${BASE_URL}${path}`);  
-  url.searchParams.set("api_key", API_KEY);
+  const url = new URL(`${window.location.origin}${BASE_URL}${path}`);  
   Object.entries(params).forEach(([k, v]) => url.searchParams.set(k, v));
+  
   const res = await fetch(url.toString());
   if (!res.ok) throw new Error(`TMDB error: ${res.status}`);
   return res.json();
@@ -25,8 +25,8 @@ export const getTopRatedMovies = async (page = 1) => {
   return data.results;
 };
 
-export const getTrendingMovies = async (timeWindow = "week") => {
-  const data = await tmdbFetch(`/trending/movie/${timeWindow}`);
+export const getTrendingMovies = async (timeWindow = "week", page = 1) => {
+  const data = await tmdbFetch(`/trending/movie/${timeWindow}`, { page });
   return data.results;
 };
 
@@ -53,8 +53,8 @@ export const getTopRatedTVShows = async (page = 1) => {
   return data.results;
 };
 
-export const getTrendingTVShows = async (timeWindow = "week") => {
-  const data = await tmdbFetch(`/trending/tv/${timeWindow}`);
+export const getTrendingTVShows = async (timeWindow = "week", page = 1) => {
+  const data = await tmdbFetch(`/trending/tv/${timeWindow}`, { page });
   return data.results;
 };
 
@@ -106,6 +106,24 @@ export const searchAnime = async (query, page = 1) => {
 };
 
 // ══════════════════════════════
+//  PEOPLE
+// ══════════════════════════════
+
+export const getPopularPeople = async (page = 1) => {
+  const data = await tmdbFetch("/person/popular", { page });
+  return data.results;
+};
+
+export const getPersonDetails = async (id) => {
+  return tmdbFetch(`/person/${id}`);
+};
+
+export const getPersonCombinedCredits = async (id) => {
+  const data = await tmdbFetch(`/person/${id}/combined_credits`);
+  return data.cast;
+};
+
+// ══════════════════════════════
 //  GLOBAL SEARCH
 // ══════════════════════════════
 
@@ -143,6 +161,16 @@ export const searchAllMedia = async (query, page = 1) => {
   });
 
   return results;
+};
+
+export const getAwardWinningMovies = async (page = 1) => {
+  const data = await tmdbFetch("/discover/movie", {
+    sort_by: "vote_average.desc",
+    "vote_count.gte": 1000,
+    "vote_average.gte": 8,
+    page,
+  });
+  return data.results;
 };
 
 // ══════════════════════════════

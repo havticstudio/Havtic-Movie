@@ -24,14 +24,14 @@ const Genres = () => {
   ];
 
   return (
-    <div className="p-6">
+    <div className="p-6 bg-bg-main min-h-screen">
       <h2 className="text-3xl font-bold mb-4">Movie Genres</h2>
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {genres.map((genre) => (
           <Link
             key={genre.id}
             to={`/genre/${genre.id}`}
-            className="bg-blue-500 text-white p-4 rounded hover:bg-blue-700 text-center"
+            className="bg-bg-surface text-white p-4 rounded-xl hover:bg-brand transition-colors text-center font-bold"
           >
             {genre.name}
           </Link>

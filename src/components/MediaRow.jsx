@@ -10,15 +10,15 @@ export default function MediaRow({ title, items, mediaType, loading, onWatch }) 
     scrollRef.current?.scrollBy({ left: dir * 220, behavior: "smooth" });
 
   return (
-    <section className="mt-8">
-      <div className="flex items-center justify-between mb-3">
-        <h3 className="text-white font-bold text-base md:text-lg">{title}</h3>
+    <section className="mt-10 px-1 md:px-0">
+      <div className="flex items-center justify-between mb-4 px-1">
+        <h3 className="text-white font-black text-base md:text-xl uppercase tracking-tighter">{title}</h3>
         <div className="flex gap-2">
           {[-1, 1].map((dir) => (
             <button
               key={dir}
               onClick={() => scroll(dir)}
-              className="w-8 h-8 rounded-lg bg-[#1a1d27] text-gray-400 hover:text-white hover:bg-[#2a2d3e] flex items-center justify-center transition-colors"
+              className="w-8 h-8 rounded-lg bg-bg-surface text-gray-400 hover:text-white hover:bg-bg-surface-hover flex items-center justify-center transition-colors"
             >
               <svg
                 className="w-4 h-4"
@@ -47,7 +47,7 @@ export default function MediaRow({ title, items, mediaType, loading, onWatch }) 
           ? Array.from({ length: 7 }).map((_, i) => (
               <div
                 key={i}
-                className="shrink-0 w-40 sm:w-44 md:w-48 h-64 rounded-2xl bg-[#1a1d27] animate-pulse"
+                className="shrink-0 w-40 sm:w-44 md:w-48 h-64 rounded-2xl bg-bg-surface animate-pulse"
               />
             ))
           : items.map((item) => (
