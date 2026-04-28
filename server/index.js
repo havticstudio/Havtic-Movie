@@ -87,11 +87,17 @@ mongoose.connect(process.env.MONGODB_URI)
   .then(() => console.log('✅ MongoDB connected successfully'))
   .catch(err => console.error('❌ MongoDB connection error:', err));
 
-app.listen(PORT, () => {
-  console.log(`✅ Server is running on port ${PORT}`);
-  if (process.env.JWT_SECRET) {
-    console.log('✅ JWT_SECRET is loaded');
-  } else {
-    console.error('❌ JWT_SECRET IS MISSING!');
-  }
-});
+// Export the express app for Vercel Serverless Functions
+export default app;
+
+// Only listen if not running as a serverless function
+if (process.env.NODE_ENV !== 'production' || !process.env.VERCEL) {
+  app.listen(PORT, () => {
+    console.log(`✅ Server is running on port ${PORT}`);
+    if (process.env.JWT_SECRET) {
+      console.log('✅ JWT_SECRET is loaded');
+    } else {
+      console.error('❌ JWT_SECRET IS MISSING!');
+    }
+  });
+}

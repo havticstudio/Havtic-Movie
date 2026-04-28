@@ -33,7 +33,16 @@
   "rewrites": [
     {
       "source": "/api/(.*)",
-      "destination": "https://your-backend-url.vercel.app/api/$1"
+      "destination": "/server/index.js"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/"
     }
-  ]
+  ],
+  "functions": {
+    "server/index.js": {
+      "runtime": "vercel-node@latest"
+    }
+  }
 }
