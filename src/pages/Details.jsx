@@ -169,6 +169,36 @@ export default function Watch() {
                </svg>
                App
              </button>
+              {user?.isAdmin && (
+                <button 
+                  onClick={() => {
+                    const youtubeSearch = `https://www.youtube.com/results?search_query=${encodeURIComponent(title + " full movie")}`;
+                    const url = prompt(
+                      `🎬 Custom Source for: "${title}"\n\n` +
+                      `➡️ Search YouTube: ${youtubeSearch}\n\n` +
+                      `Paste your video URL here:\n` +
+                      `  • YouTube:  https://www.youtube.com/embed/VIDEO_ID\n` +
+                      `  • Direct:   https://example.com/embed/video\n` +
+                      `  • GDrive:   https://drive.google.com/file/d/ID/preview\n`
+                    );
+                    if (url) {
+                      fetch('/api/media/save', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ tmdbId: id, type: mediaType, customUrl: url, title })
+                      }).then(() => {
+                        alert(`✅ Custom link saved for "${title}"!\n\nRefresh to see it as "VIP Server".`);
+                      });
+                    }
+                  }}
+                  className="bg-yellow-500 text-black px-5 py-2 rounded-xl font-black text-xs flex items-center gap-2 hover:bg-yellow-600 transition-all shadow-lg shadow-yellow-500/20 cursor-pointer"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  Add Source
+                </button>
+              )}
           </div>
         </div>                {/* ── Top Area: Player + Server Sidebar ── */}
         <div className="flex flex-col xl:flex-row gap-6 mb-8 max-w-[1800px] mx-auto">

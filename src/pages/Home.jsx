@@ -19,12 +19,22 @@ import MediaRow from "../components/MediaRow";
 import MovieCard from "../components/MovieCard";
 import Breadcrumbs from "../components/Breadcrumbs";
 
+import { useSearchParams } from "react-router-dom";
+
 export default function Home() {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const q = searchParams.get("q") || "";
+  
   const [activeTab, setActiveTab] = useState("Movies");
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState(q);
   const [searchResults, setSearchResults] = useState([]);
   const [searching, setSearching] = useState(false);
-  
+
+  /* ── Sync internal search with URL ── */
+  useEffect(() => {
+    setSearch(q);
+  }, [q]);
+
   // Infinite scroll states
   const [searchPage, setSearchPage] = useState(1);
   const [hasMoreSearch, setHasMoreSearch] = useState(false);
@@ -46,7 +56,8 @@ export default function Home() {
 
   /* ── Fetch on tab change ── */
   useEffect(() => {
-    setSearch("");
+    // Only reset search if we are NOT on a search result page (or optionally keep it)
+    if (!q) setSearch("");
     setTimeout(() => setLoading(true), 0);
     setExploreResults([]);
     setExplorePage(2); // Page 1 is already in popular row

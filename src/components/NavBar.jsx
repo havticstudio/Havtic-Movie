@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import logo from "../assets/havticmovielogo.png";
 
 const NAV_MENU = [
   {
@@ -8,6 +9,7 @@ const NAV_MENU = [
     items: [
       { name: "Home", path: "/", icon: HomeIcon },
       { name: "Discover", path: "/discover", icon: DiscoverIcon },
+      { name: "Genres", path: "/genres", icon: GenreIcon },
       { name: "Awards", path: "/awards", icon: AwardsIcon },
       { name: "Celebrities", path: "/celebrities", icon: CelebIcon },
     ],
@@ -71,14 +73,9 @@ export default function Navbar() {
       >
         {/* Logo and Close button */}
         <div className="px-7 py-8 flex items-center justify-between">
-          <div className="flex flex-col">
-            <span className="text-white font-black text-2xl tracking-tighter leading-none">
-              HAVTIC
-            </span>
-            <span className="text-brand font-black text-xl tracking-tighter leading-none ml-1">
-              MOVIE
-            </span>
-          </div>
+          <Link to="/" onClick={() => setOpen(false)} className="flex items-center gap-2 focus:outline-none">
+            <img src={logo} alt="Havtic Movie" className="h-10 w-auto object-contain" />
+          </Link>
 
           <button 
             className="md:hidden p-2 rounded-xl bg-white/5 text-gray-400 hover:text-white"
@@ -183,6 +180,13 @@ function HomeIcon({ active }) {
   return (
     <svg className={`w-4 h-4 shrink-0 ${active ? "text-brand" : ""}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0h6" />
+    </svg>
+  );
+}
+function GenreIcon({ active }) {
+  return (
+    <svg className={`w-4 h-4 shrink-0 ${active ? "text-brand" : ""}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 10h16M4 14h16M4 18h16" />
     </svg>
   );
 }

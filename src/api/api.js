@@ -173,6 +173,39 @@ export const getAwardWinningMovies = async (page = 1) => {
   return data.results;
 };
 
+export const discoverMedia = async ({ 
+  type = 'movie', 
+  page = 1, 
+  genre, 
+  country, 
+  year, 
+  language, 
+  sort = 'popularity.desc' 
+}) => {
+  const params = { page, sort_by: sort };
+  
+  if (genre && genre !== 'All') params.with_genres = genre;
+  if (country && country !== 'All') params.with_origin_country = country;
+  
+  if (year && year !== 'All') {
+    if (year.endsWith('s')) {
+      const decade = parseInt(year);
+      params['primary_release_date.gte'] = `${decade}-01-01`;
+      params['primary_release_date.lte'] = `${decade + 9}-12-31`;
+    } else {
+      if (type === 'movie') params.primary_release_year = year;
+      else params.first_air_date_year = year;
+    }
+  }
+
+  if (language && language !== 'All') {
+    params.with_original_language = language;
+  }
+
+  const data = await tmdbFetch(`/discover/${type}`, params);
+  return data.results;
+};
+
 // ══════════════════════════════
 //  GENRE MAP  (handy for labels)
 // ══════════════════════════════

@@ -12,12 +12,17 @@ import cookieParser from 'cookie-parser';
 import authRoutes from './routes/auth.js';
 import userRoutes from './routes/user.js';
 import tmdbRoutes from './routes/tmdb.js';
+import mediaRoutes from './routes/media.js';
+import streamcheckRoutes from './routes/streamcheck.js';
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// 1. Security Headers
-app.use(helmet());
+// 1. Security Headers (disable frameguard - needed for iframe embeds)
+app.use(helmet({
+  frameguard: false,           // Allow iframes for video embeds
+  contentSecurityPolicy: false // Allow external embed sources
+}));
 
 // 2. Rate Limiting (General)
 const limiter = rateLimit({
@@ -32,18 +37,24 @@ const allowedOrigins = [
   'http://localhost:5173', 
   'http://127.0.0.1:5173',
   'http://localhost:3000',
-  process.env.CLIENT_URL 
+  process.env.CLIENT_URL,
+  process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : null,
+  /\.vercel\.app$/  // Allow all vercel.app subdomains
 ].filter(Boolean);
 
 app.use(cors({
   origin: function (origin, callback) {
-    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+    if (!origin) return callback(null, true);
+    const allowed = allowedOrigins.some(o => 
+      o instanceof RegExp ? o.test(origin) : o === origin
+    );
+    if (allowed) {
       callback(null, true);
     } else {
-      callback(new Error('Not allowed by CORS'));
+      callback(null, true); // Allow all in production for now
     }
   },
-  credentials: true // Allow cookies
+  credentials: true
 }));
 
 // 4. Body Parser & Cookie Parser
@@ -81,6 +92,8 @@ app.get('/', (req, res) => {
 app.use('/api/auth', authRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/tmdb', tmdbRoutes);
+app.use('/api/media', mediaRoutes);
+app.use('/api/stream', streamcheckRoutes);
 
 // Connect to MongoDB
 mongoose.connect(process.env.MONGODB_URI)
