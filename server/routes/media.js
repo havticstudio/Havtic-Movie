@@ -15,11 +15,19 @@ router.get('/:tmdbId', async (req, res) => {
 
 // Save or Update custom link (Admin only)
 router.post('/save', async (req, res) => {
-  const { tmdbId, type, customUrl, title } = req.body;
+  const { tmdbId, type, customUrl1, customUrl2, customUrl3, title } = req.body;
   try {
     const link = await MediaLink.findOneAndUpdate(
       { tmdbId },
-      { type, customUrl, title, updatedAt: Date.now() },
+      { 
+        type, 
+        customUrl1, 
+        customUrl2, 
+        customUrl3, 
+        customUrl: customUrl1 || customUrl2 || customUrl3, // fallback for legacy code
+        title, 
+        updatedAt: Date.now() 
+      },
       { upsert: true, new: true }
     );
     res.json({ message: 'Success', link });

@@ -17,10 +17,12 @@ export default function Watch() {
   const [episode, setEpisode] = useState(1);
   const [details, setDetails] = useState(null);
   const [loadingDetails, setLoadingDetails] = useState(false);
+  const [showSourceModal, setShowSourceModal] = useState(false);
+  const [sourceLinks, setSourceLinks] = useState({ link1: '', link2: '', link3: '' });
   
   const playerContainerRef = useRef(null);
 
-  // Keyboard shortcuts (Fullscreen)
+  // Keyboard shortcuts (Fullscreen enabled via 'F' key)
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA") return;
@@ -54,6 +56,22 @@ export default function Watch() {
       .catch(console.error)
       .finally(() => setLoadingDetails(false));
   }, [id, mediaType]);
+  
+  // Fetch existing custom links
+  useEffect(() => {
+    if (!id) return;
+    fetch(`/api/media/${id}`)
+      .then(res => res.json())
+      .then(data => {
+        if (data) {
+          setSourceLinks({
+            link1: data.customUrl1 || '',
+            link2: data.customUrl2 || '',
+            link3: data.customUrl3 || ''
+          });
+        }
+      });
+  }, [id]);
 
   const title = details?.name || details?.title || "Loading...";
 
@@ -171,26 +189,7 @@ export default function Watch() {
              </button>
               {user?.isAdmin && (
                 <button 
-                  onClick={() => {
-                    const youtubeSearch = `https://www.youtube.com/results?search_query=${encodeURIComponent(title + " full movie")}`;
-                    const url = prompt(
-                      `🎬 Custom Source for: "${title}"\n\n` +
-                      `➡️ Search YouTube: ${youtubeSearch}\n\n` +
-                      `Paste your video URL here:\n` +
-                      `  • YouTube:  https://www.youtube.com/embed/VIDEO_ID\n` +
-                      `  • Direct:   https://example.com/embed/video\n` +
-                      `  • GDrive:   https://drive.google.com/file/d/ID/preview\n`
-                    );
-                    if (url) {
-                      fetch('/api/media/save', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ tmdbId: id, type: mediaType, customUrl: url, title })
-                      }).then(() => {
-                        alert(`✅ Custom link saved for "${title}"!\n\nRefresh to see it as "VIP Server".`);
-                      });
-                    }
-                  }}
+                  onClick={() => setShowSourceModal(true)}
                   className="bg-yellow-500 text-black px-5 py-2 rounded-xl font-black text-xs flex items-center gap-2 hover:bg-yellow-600 transition-all shadow-lg shadow-yellow-500/20 cursor-pointer"
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -200,7 +199,87 @@ export default function Watch() {
                 </button>
               )}
           </div>
-        </div>                {/* ── Top Area: Player + Server Sidebar ── */}
+        </div>
+
+        {/* ── Source Modal ── */}
+        {showSourceModal && (
+          <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fade-in">
+            <div className="bg-bg-surface border border-white/10 w-full max-w-md rounded-3xl p-8 shadow-2xl scale-in">
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-xl font-black text-white uppercase tracking-tight">Add Movie Sources</h2>
+                <button onClick={() => setShowSourceModal(false)} className="text-gray-500 hover:text-white transition-colors">
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+                </button>
+              </div>
+              
+              <div className="space-y-4">
+                <div>
+                  <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-2 block">VIP Source 1 (Primary)</label>
+                  <input 
+                    type="text" 
+                    placeholder="https://example.com/embed/1" 
+                    className="w-full bg-black/40 border border-white/5 rounded-xl px-4 py-3 text-sm text-white outline-none focus:border-brand transition-all"
+                    value={sourceLinks.link1}
+                    onChange={(e) => setSourceLinks({...sourceLinks, link1: e.target.value})}
+                  />
+                </div>
+                <div>
+                  <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-2 block">VIP Source 2</label>
+                  <input 
+                    type="text" 
+                    placeholder="https://example.com/embed/2" 
+                    className="w-full bg-black/40 border border-white/5 rounded-xl px-4 py-3 text-sm text-white outline-none focus:border-brand transition-all"
+                    value={sourceLinks.link2}
+                    onChange={(e) => setSourceLinks({...sourceLinks, link2: e.target.value})}
+                  />
+                </div>
+                <div>
+                  <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-2 block">VIP Source 3</label>
+                  <input 
+                    type="text" 
+                    placeholder="https://example.com/embed/3" 
+                    className="w-full bg-black/40 border border-white/5 rounded-xl px-4 py-3 text-sm text-white outline-none focus:border-brand transition-all"
+                    value={sourceLinks.link3}
+                    onChange={(e) => setSourceLinks({...sourceLinks, link3: e.target.value})}
+                  />
+                </div>
+              </div>
+
+              <div className="mt-8 flex gap-3">
+                <button 
+                  onClick={() => setShowSourceModal(false)}
+                  className="flex-1 bg-white/5 text-white font-bold py-3 rounded-xl hover:bg-white/10 transition-all"
+                >
+                  Cancel
+                </button>
+                <button 
+                  onClick={async () => {
+                    const res = await fetch('/api/media/save', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ 
+                        tmdbId: id, 
+                        type: mediaType, 
+                        customUrl1: sourceLinks.link1,
+                        customUrl2: sourceLinks.link2,
+                        customUrl3: sourceLinks.link3,
+                        title 
+                      })
+                    });
+                    if (res.ok) {
+                      setShowSourceModal(false);
+                      alert("Sources saved successfully!");
+                      window.location.reload();
+                    }
+                  }}
+                  className="flex-1 bg-brand text-white font-black py-3 rounded-xl shadow-lg shadow-brand/20 hover:bg-brand-hover transition-all"
+                >
+                  Save Links
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
         <div className="flex flex-col xl:flex-row gap-6 mb-8 max-w-[1800px] mx-auto">
           
           {/* Left: Video Player */}

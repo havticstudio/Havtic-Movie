@@ -14,8 +14,11 @@ const mediaLinkSchema = new mongoose.Schema({
   },
   customUrl: {
     type: String,
-    required: true
+    required: false
   },
+  customUrl1: String,
+  customUrl2: String,
+  customUrl3: String,
   title: String,
   updatedAt: {
     type: Date,
