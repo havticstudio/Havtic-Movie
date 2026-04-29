@@ -10,7 +10,7 @@ const router = express.Router();
 // Specific rate limit for auth routes to prevent brute force
 const authLimiter = rateLimit({
   windowMs: 60 * 60 * 1000, // 1 hour
-  max: 10, // Limit each IP to 10 requests per windowMs
+  max: 100, // Increased to 100 for testing
   message: 'Too many login attempts, please try again after an hour'
 });
 
@@ -91,7 +91,10 @@ router.post('/login', authLimiter, validateLogin, async (req, res) => {
     sendToken(user, 200, res);
   } catch (err) {
     console.error('Login Error:', err);
-    res.status(500).json({ message: 'Server error during login' });
+    res.status(500).json({ 
+      message: 'Server error during login',
+      error: err.message // Temporary: show actual error for debugging
+    });
   }
 });
 
