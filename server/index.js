@@ -16,6 +16,7 @@ import mediaRoutes from './routes/media.js';
 import streamcheckRoutes from './routes/streamcheck.js';
 
 const app = express();
+app.set('trust proxy', 1); // Trust Vercel proxy for accurate IP rate limiting
 const PORT = process.env.PORT || 5000;
 
 // 1. Security Headers (disable frameguard - needed for iframe embeds)
