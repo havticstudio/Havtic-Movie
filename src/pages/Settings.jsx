@@ -1,8 +1,18 @@
+import { useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { Helmet } from "react-helmet-async";
 
 export default function Settings() {
   const { user, loading, logout } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {
+    if (!loading && !user) {
+      navigate("/login", { state: { from: location.pathname }, replace: true });
+    }
+  }, [user, loading, navigate, location]);
 
   if (loading) {
     return (
@@ -12,13 +22,7 @@ export default function Settings() {
     );
   }
 
-  if (!user) {
-    return (
-      <div className="min-h-screen bg-bg-main flex flex-col items-center justify-center p-4">
-        <h2 className="text-2xl font-bold text-white mb-4">Login to access settings</h2>
-      </div>
-    );
-  }
+  if (!user) return null;
 
   return (
     <div className="min-h-screen bg-bg-main p-4 md:p-8 animate-fade-up">

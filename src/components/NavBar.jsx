@@ -68,7 +68,7 @@ export default function Navbar() {
 
       {/* Sidebar */}
       <aside
-        className={`fixed inset-y-0 left-0 z-50 w-72 bg-bg-main flex flex-col transition-all duration-500 ease-in-out md:relative md:translate-x-0 shrink-0 border-r border-white/5 shadow-2xl
+        className={`fixed inset-y-0 left-0 z-50 w-72 bg-bg-main/30 backdrop-blur-md flex flex-col transition-all duration-500 ease-in-out md:relative md:translate-x-0 shrink-0 border-r border-white/5 shadow-2xl
           ${open ? "translate-x-0 opacity-100" : "-translate-x-full md:opacity-100 opacity-0"}`}
       >
         {/* Logo and Close button */}
@@ -77,7 +77,7 @@ export default function Navbar() {
             <img src={logo} alt="Havtic Movie" className="h-10 w-auto object-contain" />
           </Link>
 
-          <button 
+          <button
             className="md:hidden p-2 rounded-xl bg-white/5 text-gray-400 hover:text-white"
             onClick={() => setOpen(false)}
           >
@@ -95,7 +95,7 @@ export default function Navbar() {
               <ul className="space-y-1">
                 {group.items.map(({ name, path, icon: Icon, isAction }) => {
                   const active = location.pathname === path;
-                  
+
                   if (isAction) {
                     return (
                       <li key={name}>

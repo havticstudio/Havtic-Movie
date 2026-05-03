@@ -36,6 +36,14 @@ const auth = async (req, res, next) => {
 router.get('/me', auth, async (req, res) => {
   try {
     const user = await User.findById(req.user).select('-password');
+    
+    // Auto-revoke premium if expired
+    if (user.isPremium && user.premiumExpiry && Date.now() > new Date(user.premiumExpiry).getTime()) {
+      user.isPremium = false;
+      user.premiumExpiry = null;
+      await user.save();
+    }
+    
     res.json(user);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -177,9 +185,54 @@ router.post('/admin/payment/approve', auth, async (req, res) => {
 
     payment.status = 'approved';
     user.isPremium = true; // Activate premium
+    user.premiumExpiry = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000); // 30 days
     await user.save();
 
     res.json({ message: 'Payment approved and Premium activated!' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ADMIN: DASHBOARD STATS
+router.get('/admin/dashboard', auth, async (req, res) => {
+  try {
+    const adminUser = await User.findById(req.user);
+    if (!adminUser.isAdmin) return res.status(403).json({ message: 'Admin access denied' });
+
+    const totalUsers = await User.countDocuments();
+    const premiumUsersCount = await User.countDocuments({ isPremium: true });
+    const freeUsers = totalUsers - premiumUsersCount;
+
+    // Get list of active premium users
+    const premiumUsers = await User.find({ isPremium: true }).select('name email premiumExpiry');
+
+    res.json({
+      totalUsers,
+      premiumUsersCount,
+      freeUsers,
+      premiumUsers
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ADMIN: REVOKE PREMIUM
+router.post('/admin/premium/revoke', auth, async (req, res) => {
+  try {
+    const adminUser = await User.findById(req.user);
+    if (!adminUser.isAdmin) return res.status(403).json({ message: 'Admin access denied' });
+
+    const { userId } = req.body;
+    const user = await User.findById(userId);
+    if (!user) return res.status(404).json({ message: 'User not found' });
+
+    user.isPremium = false;
+    user.premiumExpiry = null;
+    await user.save();
+
+    res.json({ message: 'Premium access revoked' });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

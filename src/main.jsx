@@ -21,7 +21,22 @@ import Premium from "./pages/Premium.jsx";
 import AdminPayments from "./pages/AdminPayments.jsx";
 import { AuthProvider } from "./context/AuthContext.jsx";
 
-const router = createBrowserRouter([
+import { useMobile } from "./hooks/useMobile.js";
+import MobileApp from "./mobile/MobileApp.jsx";
+import MobileHome from "./mobile/MobileHome.jsx";
+import MobileDetails from "./mobile/MobileDetails.jsx";
+import MobileDiscover from "./mobile/MobileDiscover.jsx";
+import MobileWatchlist from "./mobile/MobileWatchlist.jsx";
+import MobileCompleted from "./mobile/MobileCompleted.jsx";
+import MobileSettings from "./mobile/MobileSettings.jsx";
+import MobilePremium from "./mobile/MobilePremium.jsx";
+import MobileAwards from "./mobile/MobileAwards.jsx";
+import MobileGenres from "./mobile/MobileGenres.jsx";
+import MobileLogin from "./mobile/MobileLogin.jsx";
+import MobileSignup from "./mobile/MobileSignup.jsx";
+import { HelmetProvider } from "react-helmet-async";
+
+const desktopRoutes = [
   {
     path: "/",
     element: <App />,
@@ -42,24 +57,49 @@ const router = createBrowserRouter([
       { path: "details/:mediaType/:id/:slug", element: <Details /> },
     ],
   },
-  {
-    path: "/login",
-    element: <Login />,
-  },
-  {
-    path: "/signup",
-    element: <Signup />,
-  },
-]);
+  { path: "/login", element: <Login /> },
+  { path: "/signup", element: <Signup /> },
+];
 
-import { HelmetProvider } from "react-helmet-async";
+const mobileRoutes = [
+  {
+    path: "/",
+    element: <MobileApp />,
+    children: [
+      { index: true, element: <MobileHome /> },
+      { path: "discover", element: <MobileDiscover /> },
+      { path: "watchlist", element: <MobileWatchlist /> },
+      { path: "completed", element: <MobileCompleted /> },
+      { path: "settings", element: <MobileSettings /> },
+      { path: "premium", element: <MobilePremium /> },
+      { path: "awards", element: <MobileAwards /> },
+      { path: "genres", element: <MobileGenres /> },
+      { path: "details/:mediaType/:id/:slug", element: <MobileDetails /> },
+      { path: "celebrities", element: <Celebrities /> },
+      { path: "celebrity/:id", element: <CelebrityDetails /> },
+      { path: "recent", element: <Recent /> },
+      { path: "top-rated", element: <TopRated /> },
+      { path: "admin/payments", element: <AdminPayments /> },
+    ],
+  },
+  { path: "/login", element: <MobileLogin /> },
+  { path: "/signup", element: <MobileSignup /> },
+];
+
+const DesktopRouter = createBrowserRouter(desktopRoutes);
+const MobileRouter = createBrowserRouter(mobileRoutes);
+
+function RootApp() {
+  const isMobile = useMobile();
+  return <RouterProvider router={isMobile ? MobileRouter : DesktopRouter} />;
+}
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <HelmetProvider>
       <AuthProvider>
-        <RouterProvider router={router} />
+        <RootApp />
       </AuthProvider>
     </HelmetProvider>
-  </StrictMode>,
+  </StrictMode>
 );

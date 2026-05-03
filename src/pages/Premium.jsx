@@ -30,6 +30,7 @@ export default function Premium() {
       const res = await fetch("/api/user/payment/submit", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify({ amount, transactionId: trxId }),
       });
 

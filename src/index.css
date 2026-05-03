@@ -13,15 +13,22 @@
   body {
     @apply bg-bg-main text-white antialiased;
   }
-  
+
+  /* Force transparency so the 3D canvas is visible */
+  main > div.bg-bg-main {
+    background-color: transparent !important;
+  }
+
   /* Custom Slim Scrollbar */
   ::-webkit-scrollbar {
     width: 5px;
     height: 5px;
   }
+
   ::-webkit-scrollbar-track {
     background: transparent;
   }
+
   ::-webkit-scrollbar-thumb {
     @apply bg-white/10 rounded-full hover:bg-white/20 transition-colors;
   }
@@ -31,10 +38,12 @@
   .pb-safe {
     padding-bottom: env(safe-area-inset-bottom);
   }
+
   .scrollbar-hide {
     scrollbar-width: none;
     -ms-overflow-style: none;
   }
+
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
   }
@@ -48,6 +57,7 @@
       opacity: 0;
       transform: translateY(20px);
     }
+
     to {
       opacity: 1;
       transform: translateY(0);
@@ -62,6 +72,7 @@
     0% {
       clip-path: inset(0 0 100% 0);
     }
+
     100% {
       clip-path: inset(0 0 0 0);
     }
