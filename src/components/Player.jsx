@@ -1,126 +1,33 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { useAuth } from '../context/AuthContext';
 
-function normalizeUrl(url) {
-  try {
-    if (url.includes('youtube.com/watch')) {
-      const videoId = new URL(url).searchParams.get('v');
-      if (videoId) return `https://www.youtube.com/embed/${videoId}`;
-    }
-    if (url.includes('youtu.be/')) {
-      const videoId = url.split('youtu.be/')[1]?.split('?')[0];
-      if (videoId) return `https://www.youtube.com/embed/${videoId}`;
-    }
-    if (url.includes('drive.google.com/file/d/')) {
-      const match = url.match(/\/d\/([^/]+)/);
-      if (match) return `https://drive.google.com/file/d/${match[1]}/preview`;
-    }
-  } catch { }
-  return url;
-}
-
 const VIDSRC_DOMAIN = 'vidsrc-embed.su';
-const INTERACTION_WAIT_MS = 10000;
-const LOAD_TIMEOUT_MS = 12000;
 
 export default function Player({ imdbId, type, season, episode, title }) {
   const { user } = useAuth();
   const containerRef = useRef(null);
 
   const [streamUrl, setStreamUrl] = useState(null);
-  const [serverName, setServerName] = useState('');
   const [loading, setLoading] = useState(true);
   const [showControls, setShowControls] = useState(true);
 
-  const idxRef = useRef(0);
-  const confirmedRef = useRef(false);
-  const iframeOnRef = useRef(false);
-  const timerRef = useRef(null);
   const controlTimer = useRef(null);
-  const isVipModeRef = useRef(false);
-  const vipLinksRef = useRef([]);
-
-  const tryServer = useCallback((index, isVipSearch = true) => {
-    clearTimeout(timerRef.current);
-
-    if (isVipSearch) {
-      if (index >= vipLinksRef.current.length) {
-        // VIP links exhausted, try VidSrc as fallback
-        isVipModeRef.current = false;
-        tryServer(0, false);
-        return;
-      }
-      setStreamUrl(normalizeUrl(vipLinksRef.current[index]));
-      setServerName(`VIP ${index + 1}`);
-      isVipModeRef.current = true;
-    } else {
-      // VidSrc Fallback
-      if (index > 0) {
-        setLoading(false);
-        return;
-      }
-      setStreamUrl(type === 'movie' 
-        ? `https://${VIDSRC_DOMAIN}/embed/movie/${imdbId}` 
-        : `https://${VIDSRC_DOMAIN}/embed/tv/${imdbId}/${season}/${episode}`
-      );
-      setServerName('VidSrc');
-      isVipModeRef.current = false;
-    }
-
-    idxRef.current = index;
-    setLoading(true);
-
-    timerRef.current = setTimeout(() => {
-      if (!confirmedRef.current) tryServer(index + 1, isVipModeRef.current);
-    }, LOAD_TIMEOUT_MS);
-  }, [imdbId, type, season, episode]);
 
   useEffect(() => {
     if (!imdbId) return;
-    idxRef.current = 0;
-    confirmedRef.current = false;
-    iframeOnRef.current = false;
     setLoading(true);
-
-    // Fetch VIP links from DB
-    fetch(`/api/media/${imdbId}`)
-      .then(r => r.json())
-      .then(data => {
-        vipLinksRef.current = [data?.customUrl1, data?.customUrl2, data?.customUrl3].filter(Boolean);
-        
-        // If VIP links exist, try them first!
-        if (vipLinksRef.current.length > 0) {
-          tryServer(0, true);
-        } else {
-          tryServer(0, false); // No VIP, try VidSrc
-        }
-      })
-      .catch(() => tryServer(0, false));
-
-    return () => clearTimeout(timerRef.current);
-  }, [imdbId, type, season, episode, tryServer]);
-
-  useEffect(() => {
-    const onBlur = () => {
-      if (!confirmedRef.current && iframeOnRef.current) {
-        clearTimeout(timerRef.current);
-        confirmedRef.current = true;
-      }
-    };
-    window.addEventListener('blur', onBlur);
-    return () => window.removeEventListener('blur', onBlur);
-  }, []);
+    
+    // Set fast loading stream URL immediately
+    const url = type === 'movie' 
+      ? `https://${VIDSRC_DOMAIN}/embed/movie/${imdbId}` 
+      : `https://${VIDSRC_DOMAIN}/embed/tv/${imdbId}/${season}/${episode}`;
+      
+    setStreamUrl(url);
+  }, [imdbId, type, season, episode]);
 
   const handleLoad = useCallback(() => {
-    iframeOnRef.current = true;
     setLoading(false);
-    if (confirmedRef.current) return;
-
-    clearTimeout(timerRef.current);
-    timerRef.current = setTimeout(() => {
-      if (!confirmedRef.current) tryServer(idxRef.current + 1, isVipModeRef.current);
-    }, INTERACTION_WAIT_MS);
-  }, [tryServer]);
+  }, []);
 
   const handleMouseMove = () => {
     setShowControls(true);
@@ -160,9 +67,9 @@ export default function Player({ imdbId, type, season, episode, title }) {
           {type === 'tv' && (
             <span className="bg-brand text-white text-[10px] font-black px-2 py-0.5 rounded-md">S{season} E{episode}</span>
           )}
-          {!loading && serverName && (
-            <span className={`text-[10px] font-black px-2 py-0.5 rounded-md ${serverName.startsWith('VIP') ? 'bg-yellow-500 text-black' : 'bg-white/10 text-white'}`}>
-              {serverName}
+          {!loading && (
+            <span className="text-[10px] font-black px-2 py-0.5 rounded-md bg-white/10 text-white">
+              VidSrc
             </span>
           )}
         </div>

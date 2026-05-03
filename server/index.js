@@ -12,7 +12,6 @@ import cookieParser from 'cookie-parser';
 import authRoutes from './routes/auth.js';
 import userRoutes from './routes/user.js';
 import tmdbRoutes from './routes/tmdb.js';
-import mediaRoutes from './routes/media.js';
 import streamcheckRoutes from './routes/streamcheck.js';
 
 const app = express();
@@ -93,7 +92,6 @@ app.get('/', (req, res) => {
 app.use('/api/auth', authRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/tmdb', tmdbRoutes);
-app.use('/api/media', mediaRoutes);
 app.use('/api/stream', streamcheckRoutes);
 
 // Connect to MongoDB
