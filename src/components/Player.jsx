@@ -3,9 +3,11 @@ import { useAuth } from '../context/AuthContext';
 
 const VIDSRC_DOMAIN = 'vidsrc-embed.su';
 
-export default function Player({ imdbId, type, season, episode, title }) {
+export default function Player({ tmdbId, imdbId, type, mediaType, season, episode, title }) {
   const { user } = useAuth();
   const containerRef = useRef(null);
+  const mType = type || mediaType;
+  const id = tmdbId || imdbId;
 
   const [streamUrl, setStreamUrl] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -14,16 +16,16 @@ export default function Player({ imdbId, type, season, episode, title }) {
   const controlTimer = useRef(null);
 
   useEffect(() => {
-    if (!imdbId) return;
+    if (!id) return;
     setLoading(true);
     
     // Set fast loading stream URL immediately
-    const url = type === 'movie' 
-      ? `https://${VIDSRC_DOMAIN}/embed/movie/${imdbId}` 
-      : `https://${VIDSRC_DOMAIN}/embed/tv/${imdbId}/${season}/${episode}`;
+    const url = mType === 'movie' 
+      ? `https://${VIDSRC_DOMAIN}/embed/movie/${id}` 
+      : `https://${VIDSRC_DOMAIN}/embed/tv/${id}/${season}/${episode}`;
       
     setStreamUrl(url);
-  }, [imdbId, type, season, episode]);
+  }, [id, mType, season, episode]);
 
   const handleLoad = useCallback(() => {
     setLoading(false);
