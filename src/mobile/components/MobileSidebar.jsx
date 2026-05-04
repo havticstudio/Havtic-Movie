@@ -70,6 +70,11 @@ export default function MobileSidebar({ isOpen, onClose }) {
               <Link to="/settings" onClick={onClose} className="block px-4 py-3 rounded-xl text-sm font-bold text-gray-300 hover:bg-white/5">
                 Settings
               </Link>
+              {user?.isAdmin && (
+                <Link to="/admin/payments" onClick={onClose} className="block px-4 py-3 rounded-xl text-sm font-bold text-brand/80 hover:bg-white/5">
+                  Admin Panel
+                </Link>
+              )}
               {user ? (
                 <button onClick={() => { logout(); onClose(); }} className="w-full text-left px-4 py-3 rounded-xl text-sm font-bold text-red-400 hover:bg-white/5">
                   Sign Out

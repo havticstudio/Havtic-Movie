@@ -57,12 +57,7 @@ export default function MobilePremium() {
         <title>Get Premium</title>
       </Helmet>
 
-      {/* Fixed Page Header */}
-      <div className="fixed top-14 left-0 right-0 z-40 bg-bg-main/95 backdrop-blur-xl border-b border-white/5 px-4 pt-4 pb-3">
-        <h1 className="text-lg font-black text-transparent bg-clip-text bg-gradient-to-r from-brand to-red-400 uppercase tracking-widest text-center">Get Premium</h1>
-      </div>
-
-      <div className="pt-16 px-4 mt-6">
+      <div className="pt-4 px-4 mt-6">
         {/* Banner */}
         <div className="bg-gradient-to-br from-brand/40 to-black border border-brand/30 rounded-[2rem] p-6 text-center shadow-2xl shadow-brand/20 mb-8 relative overflow-hidden">
           <div className="absolute top-0 right-0 w-32 h-32 bg-brand blur-[60px] opacity-40"></div>

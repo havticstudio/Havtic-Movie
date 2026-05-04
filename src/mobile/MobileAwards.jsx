@@ -58,15 +58,7 @@ export default function MobileAwards() {
         <title>Awards Hall of Fame</title>
       </Helmet>
 
-      {/* Fixed Page Header */}
-      <div className="fixed top-14 left-0 right-0 z-40 bg-bg-main/95 backdrop-blur-xl border-b border-white/5 px-4 py-3 flex justify-between items-center h-[56px]">
-        <h1 className="text-lg font-black text-white uppercase tracking-widest">Awards</h1>
-        <div className="bg-brand/20 text-brand px-3 py-1 rounded-full text-[10px] font-black tracking-widest">
-          Hall of Fame
-        </div>
-      </div>
-
-      <div className="pt-16">
+      <div className="pt-4">
         {/* Hall of Fame Hero - Mobile Optimized */}
         <div className="px-4 mb-8">
           <div className="relative rounded-[2rem] overflow-hidden bg-[#1a0505] border border-brand/20 p-6 text-center shadow-2xl shadow-brand/10">

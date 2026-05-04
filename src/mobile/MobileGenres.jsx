@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { Helmet } from "react-helmet-async";
 import { useSearchParams } from "react-router-dom";
-import { discoverMedia } from "../api/api";
+import { useData } from "../context/DataContext";
 import MobileMovieCard from "./components/MobileMovieCard";
 import MobileGrid from "./components/MobileGrid";
 
@@ -83,6 +83,7 @@ const SORT_OPTIONS = [
 
 export default function MobileGenres() {
   const [searchParams, setSearchParams] = useSearchParams();
+  const { getDiscoverData } = useData();
   const [filters, setFilters] = useState({
     type: searchParams.get("type") || "movie",
     genre: searchParams.get("genre") || "All",
@@ -112,9 +113,12 @@ export default function MobileGenres() {
     else setLoading(true);
 
     try {
-      const data = await discoverMedia({ ...filters, page: pageNum });
+      const data = await getDiscoverData(filters, pageNum);
       if (isMore) {
-        setResults((prev) => [...prev, ...data]);
+        setResults((prev) => {
+            const newItems = data.filter(newItem => !prev.some(oldItem => oldItem.id === newItem.id));
+            return [...prev, ...newItems];
+        });
       } else {
         setResults(data);
       }
@@ -125,7 +129,7 @@ export default function MobileGenres() {
       setLoading(false);
       setLoadingMore(false);
     }
-  }, [filters]);
+  }, [filters, getDiscoverData]);
 
   useEffect(() => {
     setPage(1);
@@ -160,16 +164,14 @@ export default function MobileGenres() {
   return (
     <div className="min-h-screen bg-transparent pt-14 pb-10 relative">
       <Helmet><title>Explore Genres</title></Helmet>
-
-      {/* Fixed Header */}
-      <div className="fixed top-14 left-0 right-0 z-40 bg-bg-main/95 backdrop-blur-xl border-b border-white/5 px-4 py-3 flex justify-between items-center h-[56px]">
-        <h1 className="text-lg font-black text-white uppercase tracking-widest">Explore</h1>
+      {/* Tabs Header */}
+      <div className="relative z-40 bg-transparent border-b border-white/5 px-4 py-3 flex justify-start items-center h-auto min-h-[56px]">
         <div className="flex bg-white/5 p-1 rounded-full border border-white/10">
           {["movie", "tv"].map((t) => (
             <button
               key={t}
               onClick={() => updateFilter("type", t)}
-              className={`px-4 py-1 rounded-full text-[8px] font-black uppercase tracking-widest transition-all ${
+              className={`px-4 py-1.5 rounded-full text-[8px] font-black uppercase tracking-widest transition-all ${
                 filters.type === t ? "bg-brand text-white shadow-lg shadow-brand/20" : "text-gray-500"
               }`}
             >
@@ -179,18 +181,20 @@ export default function MobileGenres() {
         </div>
       </div>
 
-      <div className="pt-16">
-        {/* Horizontal Filters */}
-        <div className="mb-6 space-y-4">
-          <FilterScroll label="Genre" options={GENRES} activeId={filters.genre} onSelect={(id) => updateFilter("genre", id)} />
-          <FilterScroll label="Country" options={COUNTRIES} activeId={filters.country} onSelect={(id) => updateFilter("country", id)} />
-          <FilterScroll label="Year" options={YEARS} activeId={filters.year} onSelect={(id) => updateFilter("year", id)} />
-          <FilterScroll label="Language" options={LANGUAGES} activeId={filters.language} onSelect={(id) => updateFilter("language", id)} />
-          <FilterScroll label="Sort" options={SORT_OPTIONS} activeId={filters.sort} onSelect={(id) => updateFilter("sort", id)} />
+      <div className="pt-6 px-4">
+        {/* Dropdown Filters Grid */}
+        <div className="grid grid-cols-2 gap-4 mb-8">
+          <MobileDropdown label="Genre" options={GENRES} activeId={filters.genre} onSelect={(id) => updateFilter("genre", id)} />
+          <MobileDropdown label="Country" options={COUNTRIES} activeId={filters.country} onSelect={(id) => updateFilter("country", id)} />
+          <MobileDropdown label="Year" options={YEARS} activeId={filters.year} onSelect={(id) => updateFilter("year", id)} />
+          <MobileDropdown label="Language" options={LANGUAGES} activeId={filters.language} onSelect={(id) => updateFilter("language", id)} />
+          <div className="col-span-2">
+            <MobileDropdown label="Sort" options={SORT_OPTIONS} activeId={filters.sort} onSelect={(id) => updateFilter("sort", id)} />
+          </div>
         </div>
 
         {/* Content Grid */}
-        <div className="px-4">
+        <div className="">
           {loading && page === 1 ? (
             <MobileGrid items={[]} loading={true} />
           ) : (
@@ -217,25 +221,41 @@ export default function MobileGenres() {
   );
 }
 
-function FilterScroll({ label, options, activeId, onSelect }) {
+function MobileDropdown({ label, options, activeId, onSelect }) {
+  const [isOpen, setIsOpen] = useState(false);
+  const activeLabel = options.find(o => o.id === activeId)?.name || "All";
+
   return (
-    <div className="flex flex-col gap-2">
-      <span className="px-4 text-gray-500 text-[8px] font-black uppercase tracking-[0.2em]">{label}</span>
-      <div className="flex gap-2 overflow-x-auto scrollbar-hide px-4 snap-x">
-        {options.map((opt) => (
-          <button
-            key={opt.id}
-            onClick={() => onSelect(opt.id)}
-            className={`shrink-0 px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest transition-all border snap-start ${
-              activeId === opt.id
-                ? "bg-white text-black border-white shadow-lg"
-                : "bg-white/5 text-gray-400 border-white/5"
-            }`}
-          >
-            {opt.name}
-          </button>
-        ))}
-      </div>
+    <div className="flex flex-col gap-1.5 relative">
+      <span className="text-gray-500 text-[7px] font-black uppercase tracking-[0.2em] pl-1">{label}</span>
+      <button 
+        onClick={() => setIsOpen(!isOpen)}
+        className="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3 flex items-center justify-between group active:scale-95 transition-all"
+      >
+        <span className="text-white text-[10px] font-black uppercase tracking-widest truncate mr-2">{activeLabel}</span>
+        <svg className={`w-3 h-3 text-gray-500 transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" />
+        </svg>
+      </button>
+
+      {isOpen && (
+        <>
+          <div className="fixed inset-0 z-[60]" onClick={() => setIsOpen(false)} />
+          <div className="absolute top-full left-0 right-0 mt-2 bg-[#120a0a] border border-white/10 rounded-[1.5rem] shadow-2xl z-[70] max-h-60 overflow-y-auto scrollbar-hide py-2 animate-fade-in">
+            {options.map((opt) => (
+              <button
+                key={opt.id}
+                onClick={() => { onSelect(opt.id); setIsOpen(false); }}
+                className={`w-full text-left px-5 py-3 text-[9px] font-black uppercase tracking-widest transition-colors ${
+                  activeId === opt.id ? "text-brand bg-brand/5" : "text-gray-400 hover:bg-white/5"
+                }`}
+              >
+                {opt.name}
+              </button>
+            ))}
+          </div>
+        </>
+      )}
     </div>
   );
 }

@@ -13,9 +13,9 @@ const MobileApp = () => {
   const isDetailsPage = location.pathname.startsWith("/details");
 
   return (
-    <div className="flex flex-col h-screen overflow-hidden bg-bg-main relative">
+    <div className="flex flex-col h-screen overflow-hidden bg-[#080101] relative">
       <ThreeBackground scrollRef={mainRef} />
-      
+
       {/* Global Mobile Header (Hidden on Details Page) */}
       {!isDetailsPage && <MobileHeader onOpenSidebar={() => setIsSidebarOpen(true)} isSearchOpen={isSearchOpen} setIsSearchOpen={setIsSearchOpen} />}
 
@@ -23,7 +23,7 @@ const MobileApp = () => {
       <main ref={mainRef} className="flex-1 h-full w-full overflow-x-hidden overflow-y-auto scrollbar-hide pb-[70px] relative z-10 overscroll-y-none">
         <Outlet context={{ openSidebar: () => setIsSidebarOpen(true), isSearchOpen, setIsSearchOpen }} />
       </main>
-      
+
       {/* App Bottom Navigation */}
       <BottomNav />
 

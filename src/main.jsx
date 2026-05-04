@@ -20,6 +20,7 @@ import Signup from "./pages/Signup.jsx";
 import Premium from "./pages/Premium.jsx";
 import AdminPayments from "./pages/AdminPayments.jsx";
 import { AuthProvider } from "./context/AuthContext.jsx";
+import { DataProvider } from "./context/DataContext.jsx";
 
 import { useMobile } from "./hooks/useMobile.js";
 import MobileApp from "./mobile/MobileApp.jsx";
@@ -32,8 +33,11 @@ import MobileSettings from "./mobile/MobileSettings.jsx";
 import MobilePremium from "./mobile/MobilePremium.jsx";
 import MobileAwards from "./mobile/MobileAwards.jsx";
 import MobileGenres from "./mobile/MobileGenres.jsx";
+import MobileCelebrities from "./mobile/MobileCelebrities.jsx";
+import MobileCelebrityDetails from "./mobile/MobileCelebrityDetails.jsx";
 import MobileLogin from "./mobile/MobileLogin.jsx";
 import MobileSignup from "./mobile/MobileSignup.jsx";
+import MobileAdmin from "./mobile/MobileAdmin.jsx";
 import { HelmetProvider } from "react-helmet-async";
 
 const desktopRoutes = [
@@ -75,11 +79,11 @@ const mobileRoutes = [
       { path: "awards", element: <MobileAwards /> },
       { path: "genres", element: <MobileGenres /> },
       { path: "details/:mediaType/:id/:slug", element: <MobileDetails /> },
-      { path: "celebrities", element: <Celebrities /> },
-      { path: "celebrity/:id", element: <CelebrityDetails /> },
+      { path: "celebrities", element: <MobileCelebrities /> },
+      { path: "celebrity/:id", element: <MobileCelebrityDetails /> },
       { path: "recent", element: <Recent /> },
       { path: "top-rated", element: <TopRated /> },
-      { path: "admin/payments", element: <AdminPayments /> },
+      { path: "admin/payments", element: <MobileAdmin /> },
     ],
   },
   { path: "/login", element: <MobileLogin /> },
@@ -98,7 +102,9 @@ createRoot(document.getElementById("root")).render(
   <StrictMode>
     <HelmetProvider>
       <AuthProvider>
-        <RootApp />
+        <DataProvider>
+          <RootApp />
+        </DataProvider>
       </AuthProvider>
     </HelmetProvider>
   </StrictMode>

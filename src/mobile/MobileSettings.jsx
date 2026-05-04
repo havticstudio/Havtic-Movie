@@ -23,12 +23,7 @@ export default function MobileSettings() {
         <title>Account Settings</title>
       </Helmet>
 
-      {/* Fixed Page Header */}
-      <div className="fixed top-14 left-0 right-0 z-40 bg-bg-main/95 backdrop-blur-xl border-b border-white/5 px-4 pt-4 pb-3">
-        <h1 className="text-lg font-black text-white uppercase tracking-widest text-center">My Account</h1>
-      </div>
-
-      <div className="pt-16 px-4 mt-6 space-y-6">
+      <div className="pt-4 px-4 mt-6 space-y-6">
         {/* Profile Card */}
         <div className="bg-black/40 backdrop-blur-md rounded-[2rem] p-6 border border-white/10 flex flex-col items-center text-center">
           <div className="w-24 h-24 rounded-full bg-brand flex items-center justify-center text-white text-4xl font-black shadow-lg shadow-brand/20 mb-4 border-4 border-black">

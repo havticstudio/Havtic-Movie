@@ -48,7 +48,7 @@ function Starfield({ scrollRef }) {
 
 export default function ThreeBackground({ scrollRef }) {
   return (
-    <div className="fixed inset-0 z-0 pointer-events-none">
+    <div className="fixed inset-0 z-0 pointer-events-none bg-[#080101]">
       <Canvas camera={{ position: [0, 0, 5], fov: 60 }}>
         <Starfield scrollRef={scrollRef} />
       </Canvas>

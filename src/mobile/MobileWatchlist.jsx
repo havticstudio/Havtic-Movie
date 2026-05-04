@@ -39,8 +39,8 @@ export default function MobileWatchlist() {
         <title>Watchlist</title>
       </Helmet>
 
-      {/* Fixed Page Header */}
-      <div className="fixed top-14 left-0 right-0 z-40 bg-bg-main/95 backdrop-blur-xl border-b border-white/5 px-4 py-3 flex justify-between items-center h-[56px]">
+      {/* Page Header (Relative) */}
+      <div className="relative z-40 bg-transparent border-b border-white/5 px-4 py-3 flex justify-between items-center h-auto min-h-[56px]">
         {isSearching ? (
           <div className="flex-1 flex items-center gap-3 animate-fade-in">
             <div className="flex-1 relative">
@@ -50,7 +50,7 @@ export default function MobileWatchlist() {
               <input 
                 autoFocus
                 type="text"
-                placeholder="Search movies..."
+                placeholder="Search saved movies..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full bg-white/5 border border-white/10 rounded-full py-1.5 pl-9 pr-4 text-xs text-white font-bold focus:outline-none focus:border-brand transition-all"
@@ -58,34 +58,35 @@ export default function MobileWatchlist() {
             </div>
             <button 
               onClick={() => { setIsSearching(false); setSearchQuery(""); }}
-              className="text-brand text-[10px] font-black uppercase tracking-widest"
+              className="w-8 h-8 flex items-center justify-center text-gray-400 active:scale-90 transition-transform"
             >
-              Cancel
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
+              </svg>
             </button>
           </div>
         ) : (
           <>
-            <h1 className="text-lg font-black text-white uppercase tracking-widest">Watchlist</h1>
             <div className="flex items-center gap-2">
-              {items.length > 7 && (
-                <button 
-                  onClick={() => setIsSearching(true)}
-                  className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-gray-400 active:scale-90 transition-transform"
-                >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M21 21l-4.35-4.35M17 11A6 6 0 115 11a6 6 0 0112 0z" />
-                  </svg>
-                </button>
-              )}
-              <div className="bg-white/10 text-white px-3 py-1 rounded-full text-[10px] font-black tracking-widest min-w-[32px] text-center">
+              <span className="text-gray-500 text-[10px] font-black uppercase tracking-[0.2em]">Saved</span>
+              <div className="bg-brand/20 text-brand px-3 py-1 rounded-full text-[10px] font-black tracking-widest">
                 {items.length}
               </div>
             </div>
+            
+            <button 
+              onClick={() => setIsSearching(true)}
+              className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-gray-400 active:scale-90 transition-transform"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M21 21l-4.35-4.35M17 11A6 6 0 115 11a6 6 0 0112 0z" />
+              </svg>
+            </button>
           </>
         )}
       </div>
 
-      <div className="pt-16">
+      <div className="pt-4">
 
       {items.length === 0 ? (
         <div className="flex flex-col items-center justify-center h-[60vh] text-center px-6">

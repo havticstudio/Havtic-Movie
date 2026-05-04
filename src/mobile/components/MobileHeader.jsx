@@ -14,12 +14,12 @@ export default function MobileHeader({ onOpenSidebar, isSearchOpen, setIsSearchO
 
       {/* Right Icons */}
       <div className="flex items-center gap-3">
-        {/* Search */}
-        {(!isSearchOpen || location.pathname !== "/discover") && !["/premium", "/settings"].includes(location.pathname) && (
+        {/* Search Icon (Home & Discover) */}
+        {(location.pathname === "/" || location.pathname === "/discover") && (
           <button 
             onClick={() => {
               if (location.pathname === "/discover") {
-                setIsSearchOpen(true);
+                setIsSearchOpen(prev => !prev);
               } else {
                 navigate("/discover", { state: { focusSearch: true } });
               }
