@@ -59,8 +59,6 @@ export default function MobileAdmin() {
   };
 
   const handleApprove = async (userId, paymentId) => {
-    if (!window.confirm("Approve this payment and activate Premium?")) return;
-
     try {
       const res = await fetch("/api/user/admin/payment/approve", {
         method: "POST",
@@ -71,19 +69,14 @@ export default function MobileAdmin() {
 
       if (res.ok) {
         setPayments((prev) => prev.filter((p) => p.paymentId !== paymentId));
-        alert("Payment approved!");
         fetchDashboardData();
-      } else {
-        alert("Failed to approve");
       }
     } catch (err) {
-      alert("Error approving");
+      console.error(err);
     }
   };
 
   const handleRevoke = async (userId) => {
-    if (!window.confirm("Revoke premium access?")) return;
-
     try {
       const res = await fetch("/api/user/admin/premium/revoke", {
         method: "POST",
@@ -93,13 +86,10 @@ export default function MobileAdmin() {
       });
 
       if (res.ok) {
-        alert("Premium revoked.");
         fetchDashboardData();
-      } else {
-        alert("Failed to revoke.");
       }
     } catch (err) {
-      alert("Error revoking.");
+      console.error(err);
     }
   };
 

@@ -20,9 +20,8 @@ export default function BottomNav() {
             <Link
               key={name}
               to={path}
-              className={`flex flex-col items-center gap-1 transition-colors ${
-                active ? "text-brand" : "text-gray-500"
-              }`}
+              className={`flex flex-col items-center gap-1 transition-colors ${active ? "text-brand" : "text-gray-500"
+                }`}
             >
               <Icon active={active} />
               <span className="text-[10px] font-bold uppercase tracking-wider">{name}</span>

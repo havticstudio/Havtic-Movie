@@ -123,7 +123,7 @@ export default function MobileHome() {
         <MobileRow title="Top Rated" items={topRated} mediaType={mediaType} loading={loading} />
 
         {/* Infinite Scroll Trending Section */}
-        <div className="mt-8 px-4">
+        <div className="mt- px-4">
           <h3 className="text-white font-black text-sm uppercase tracking-widest mb-4 border-l-2 border-brand pl-2">
             Trending {activeTab}
           </h3>

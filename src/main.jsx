@@ -37,6 +37,8 @@ import MobileCelebrities from "./mobile/MobileCelebrities.jsx";
 import MobileCelebrityDetails from "./mobile/MobileCelebrityDetails.jsx";
 import MobileLogin from "./mobile/MobileLogin.jsx";
 import MobileSignup from "./mobile/MobileSignup.jsx";
+import MobileRecent from "./mobile/MobileRecent.jsx";
+import MobileTopRated from "./mobile/MobileTopRated.jsx";
 import MobileAdmin from "./mobile/MobileAdmin.jsx";
 import { HelmetProvider } from "react-helmet-async";
 
@@ -81,8 +83,8 @@ const mobileRoutes = [
       { path: "details/:mediaType/:id/:slug", element: <MobileDetails /> },
       { path: "celebrities", element: <MobileCelebrities /> },
       { path: "celebrity/:id", element: <MobileCelebrityDetails /> },
-      { path: "recent", element: <Recent /> },
-      { path: "top-rated", element: <TopRated /> },
+      { path: "recent", element: <MobileRecent /> },
+      { path: "top-rated", element: <MobileTopRated /> },
       { path: "admin/payments", element: <MobileAdmin /> },
     ],
   },

@@ -251,3 +251,7 @@ export const GENRE_MAP = {
   10767: "Talk",
   10768: "War & Politics",
 };
+export const getMediaVideos = async (type, id) => {
+  const data = await tmdbFetch("/" + type + "/" + id + "/videos");
+  return data.results;
+};
