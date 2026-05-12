@@ -5,7 +5,7 @@ export default function Player({ tmdbId, imdbId, type, mediaType, season, episod
   const { user } = useAuth();
   const containerRef = useRef(null);
   const mType = type || mediaType;
-  
+
   // Use TMDB ID for most, but prioritize IMDB for vidsrc if available
   const id = (mType === 'movie' && imdbId) ? imdbId : (tmdbId || imdbId);
 
@@ -15,30 +15,16 @@ export default function Player({ tmdbId, imdbId, type, mediaType, season, episod
 
   const controlTimer = useRef(null);
 
-  useEffect(() => {
-    // Do not load ads if the user is a premium member
-    if (user?.isPremium) return;
-
-    // Adsterra Popunder Script for Player Page
-    const script = document.createElement('script');
-    script.src = "https://pl29326691.profitablecpmratenetwork.com/6e/74/f9/6e74f975f5fe8960146d0f9cd5e39548.js";
-    script.async = true;
-    document.body.appendChild(script);
-
-    return () => {
-      document.body.removeChild(script);
-    };
-  }, [user]);
 
   useEffect(() => {
     if (!id) return;
     setLoading(true);
-    
+
     const domain = 'vidsrc.cc';
-    const url = mType === 'movie' 
-      ? `https://${domain}/v2/embed/movie/${id}` 
+    const url = mType === 'movie'
+      ? `https://${domain}/v2/embed/movie/${id}`
       : `https://${domain}/v2/embed/tv/${id}/${season}/${episode}`;
-      
+
     setStreamUrl(url);
   }, [id, mType, season, episode, tmdbId, imdbId]);
 
