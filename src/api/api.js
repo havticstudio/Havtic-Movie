@@ -1,25 +1,29 @@
-// Point to our backend proxy instead of direct TMDB
 const BASE_URL = "/api/tmdb"; 
 
-// Simple in-memory cache to prevent re-fetching on navigation
-const apiCache = new Map();
-
-// ── Generic fetcher ──
+// ── Generic fetcher with sessionStorage cache ──
 const tmdbFetch = async (path, params = {}) => {
   const url = new URL(`${window.location.origin}${BASE_URL}${path}`);  
   Object.entries(params).forEach(([k, v]) => url.searchParams.set(k, v));
   
   const cacheKey = url.toString();
-  if (apiCache.has(cacheKey)) {
-    // Return a deeply cloned response so mutating it won't affect the cache
-    return JSON.parse(JSON.stringify(apiCache.get(cacheKey)));
+  
+  // Check sessionStorage
+  const cachedData = sessionStorage.getItem(cacheKey);
+  if (cachedData) {
+    return JSON.parse(cachedData);
   }
 
   const res = await fetch(cacheKey);
   if (!res.ok) throw new Error(`TMDB error: ${res.status}`);
   const data = await res.json();
   
-  apiCache.set(cacheKey, data);
+  // Save to sessionStorage
+  try {
+    sessionStorage.setItem(cacheKey, JSON.stringify(data));
+  } catch (e) {
+    console.warn('sessionStorage quota exceeded', e);
+  }
+  
   return data;
 };
 
