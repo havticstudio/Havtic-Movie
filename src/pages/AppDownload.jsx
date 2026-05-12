@@ -46,9 +46,13 @@ export default function AppDownload() {
             </div>
             <h2 className="text-2xl font-black text-white mb-2 uppercase tracking-wide">Desktop App</h2>
             <p className="text-gray-400 text-center mb-8 text-sm">Available for Windows and macOS. Enjoy 4K streaming and keyboard shortcuts.</p>
-            <button className="mt-auto w-full py-4 rounded-xl bg-brand text-white font-black uppercase tracking-widest text-sm hover:scale-[1.02] active:scale-95 transition-all shadow-lg shadow-brand/20">
+            <a 
+              href="/downloads/Havtic-Movie-Setup.exe" 
+              download="Havtic-Movie-Setup.exe"
+              className="mt-auto w-full py-4 rounded-xl bg-brand text-white font-black uppercase tracking-widest text-sm hover:scale-[1.02] active:scale-95 transition-all shadow-lg shadow-brand/20 text-center inline-block"
+            >
               Download for PC
-            </button>
+            </a>
           </div>
 
           {/* Mobile App Card */}
