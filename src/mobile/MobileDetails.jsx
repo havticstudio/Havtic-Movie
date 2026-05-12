@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate, useOutletContext } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { getTVShowDetails, getMovieDetails } from "../api/api";
+import { isDesktopApp } from "../utils/isDesktopApp";
 import Player from "../components/Player";
 import { useAuth } from "../context/AuthContext";
 import MobileMovieCard from "./components/MobileMovieCard";
@@ -73,12 +74,14 @@ export default function MobileDetails() {
         <div className="w-full sticky top-0 z-50 bg-bg-main shadow-2xl flex flex-col">
           {/* Top Bar */}
           <div className="w-full h-14 flex items-center justify-between px-4 bg-bg-main/90 backdrop-blur-md border-b border-white/5">
-            <button 
-              onClick={() => navigate('/apps')} 
-              className="px-4 py-1.5 rounded-full bg-brand/20 text-brand text-[10px] font-black uppercase tracking-widest active:scale-95 transition-transform border border-brand/30"
-            >
-              App
-            </button>
+            {!isDesktopApp() ? (
+              <button 
+                onClick={() => navigate('/apps')} 
+                className="px-4 py-1.5 rounded-full bg-brand/20 text-brand text-[10px] font-black uppercase tracking-widest active:scale-95 transition-transform border border-brand/30"
+              >
+                App
+              </button>
+            ) : <div className="w-[10px]"></div>}
             <span className="text-white text-xs font-black uppercase tracking-[0.2em]">{title.length > 20 ? title.slice(0,20)+'...' : title}</span>
             <button 
               onClick={() => openSidebar?.()}

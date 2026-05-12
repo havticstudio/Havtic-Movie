@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { getTVShowDetails, getMovieDetails } from "../api/api";
+import { isDesktopApp } from "../utils/isDesktopApp";
 import MovieCard from "../components/MovieCard";
 import Player from "../components/Player";
 import { useAuth } from "../context/AuthContext";
@@ -163,15 +164,17 @@ export default function Watch() {
 
              <div className="w-[1px] h-6 bg-white/10 hidden sm:block mx-1"></div>
 
-             <button 
-               onClick={() => navigate('/apps')}
-               className="bg-brand text-white px-5 py-2 rounded-xl font-black text-xs flex items-center gap-2 hover:bg-brand-hover transition-all shadow-lg shadow-brand/20 cursor-pointer"
-             >
-               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
-               </svg>
-               App
-             </button>
+             {!isDesktopApp() && (
+               <button 
+                 onClick={() => navigate('/apps')}
+                 className="bg-brand text-white px-5 py-2 rounded-xl font-black text-xs flex items-center gap-2 hover:bg-brand-hover transition-all shadow-lg shadow-brand/20 cursor-pointer"
+               >
+                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                 </svg>
+                 App
+               </button>
+             )}
 
           </div>
         </div>

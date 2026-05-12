@@ -1,9 +1,17 @@
 import { Helmet } from "react-helmet-async";
 import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
+import { isDesktopApp } from "../utils/isDesktopApp";
 import laptopMockup from "../assets/havticmovielogo.png"; // Fallback image for now
 
 export default function AppDownload() {
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (isDesktopApp()) {
+      navigate('/', { replace: true });
+    }
+  }, [navigate]);
 
   return (
     <div className="min-h-screen bg-bg-main relative flex flex-col pt-20 px-6 md:px-12 xl:px-24 pb-20 items-center justify-center">
