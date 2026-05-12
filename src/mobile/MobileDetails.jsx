@@ -66,12 +66,7 @@ export default function MobileDetails() {
     <div className="min-h-screen bg-bg-main pb-20">
       <Helmet><title>{title}</title></Helmet>
 
-      {/* Top Header */}
-      {!isPlaying && (
-        <button onClick={() => navigate(-1)} className="fixed top-4 left-4 z-50 w-10 h-10 rounded-full bg-black/60 backdrop-blur-md flex items-center justify-center text-white">
-          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
-        </button>
-      )}
+      {/* Top Header removed */}
 
       {/* Player or Hero Banner */}
       {isPlaying ? (

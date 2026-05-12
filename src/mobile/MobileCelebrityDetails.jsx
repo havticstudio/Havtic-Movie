@@ -59,13 +59,7 @@ export default function MobileCelebrityDetails() {
           <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#080101]/60 to-[#080101]"></div>
         </div>
 
-        {/* Back Button */}
-        <button 
-          onClick={() => navigate(-1)}
-          className="absolute top-10 left-4 z-20 w-10 h-10 rounded-full bg-black/40 backdrop-blur-md border border-white/10 flex items-center justify-center text-white active:scale-90 transition-transform"
-        >
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 19l-7-7 7-7" /></svg>
-        </button>
+        {/* Back Button Removed */}
       </div>
 
       {/* Profile Info Overlay */}
