@@ -21,6 +21,7 @@ import Premium from "./pages/Premium.jsx";
 import AdminPayments from "./pages/AdminPayments.jsx";
 import { AuthProvider } from "./context/AuthContext.jsx";
 import { DataProvider } from "./context/DataContext.jsx";
+import AppDownload from "./pages/AppDownload.jsx";
 
 import { useMobile } from "./hooks/useMobile.js";
 import MobileApp from "./mobile/MobileApp.jsx";
@@ -60,6 +61,7 @@ const desktopRoutes = [
       { path: "settings", element: <Settings /> },
       { path: "premium", element: <Premium /> },
       { path: "admin/payments", element: <AdminPayments /> },
+      { path: "apps", element: <AppDownload /> },
       { path: "details/:mediaType/:id/:slug", element: <Details /> },
     ],
   },
@@ -86,6 +88,7 @@ const mobileRoutes = [
       { path: "recent", element: <MobileRecent /> },
       { path: "top-rated", element: <MobileTopRated /> },
       { path: "admin/payments", element: <MobileAdmin /> },
+      { path: "apps", element: <AppDownload /> },
     ],
   },
   { path: "/login", element: <MobileLogin /> },

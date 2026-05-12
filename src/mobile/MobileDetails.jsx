@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useOutletContext } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { getTVShowDetails, getMovieDetails } from "../api/api";
 import Player from "../components/Player";
@@ -11,6 +11,7 @@ const IMG_BASE = import.meta.env.VITE_IMG_URL;
 export default function MobileDetails() {
   const { mediaType, id } = useParams();
   const navigate = useNavigate();
+  const { openSidebar } = useOutletContext() || {};
   const { user, addToWatchlist, removeFromWatchlist } = useAuth();
 
   const [details, setDetails] = useState(null);
@@ -78,17 +79,17 @@ export default function MobileDetails() {
           {/* Top Bar */}
           <div className="w-full h-14 flex items-center justify-between px-4 bg-bg-main/90 backdrop-blur-md border-b border-white/5">
             <button 
-              onClick={() => navigate(-1)} 
-              className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-white active:scale-95 transition-transform"
+              onClick={() => navigate('/apps')} 
+              className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-brand active:scale-95 transition-transform"
             >
-              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
             </button>
             <span className="text-white text-xs font-black uppercase tracking-[0.2em]">{title.length > 20 ? title.slice(0,20)+'...' : title}</span>
             <button 
-              onClick={() => setIsPlaying(false)}
+              onClick={() => openSidebar?.()}
               className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-white active:scale-95 transition-transform"
             >
-              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16m-7 6h7" /></svg>
             </button>
           </div>
           
