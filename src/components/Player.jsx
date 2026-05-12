@@ -77,12 +77,13 @@ export default function Player({ tmdbId, imdbId, type, mediaType, season, episod
 
       {!hideHeader && (
         <div className={`absolute top-0 left-0 right-0 p-6 bg-gradient-to-b from-black/90 to-transparent transition-opacity duration-500 pointer-events-none z-10 ${showControls ? 'opacity-100' : 'opacity-0'}`}>
-        <div className="flex items-center justify-between gap-3 flex-wrap">
-          <div className="flex items-center gap-3">
-            <h3 className="text-white font-black text-lg tracking-tight">{title}</h3>
-            {type === 'tv' && (
-              <span className="bg-brand text-white text-[10px] font-black px-2 py-0.5 rounded-md">S{season} E{episode}</span>
-            )}
+          <div className="flex items-center justify-between gap-3 flex-wrap">
+            <div className="flex items-center gap-3">
+              <h3 className="text-white font-black text-lg tracking-tight">{title}</h3>
+              {type === 'tv' && (
+                <span className="bg-brand text-white text-[10px] font-black px-2 py-0.5 rounded-md">S{season} E{episode}</span>
+              )}
+            </div>
           </div>
         </div>
       )}
