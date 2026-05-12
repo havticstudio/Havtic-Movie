@@ -75,10 +75,17 @@ export default function MobileDetails() {
       {/* Player or Hero Banner */}
       {isPlaying ? (
         <div className="w-full aspect-video sticky top-0 z-50 bg-black shadow-2xl">
-          <Player mediaType={mediaType} tmdbId={id} season={season} episode={episode} />
+          <Player 
+            mediaType={mediaType} 
+            tmdbId={id} 
+            imdbId={details.imdb_id}
+            season={season} 
+            episode={episode} 
+            title={title} 
+          />
           <button 
             onClick={() => setIsPlaying(false)}
-            className="absolute top-4 left-4 z-[60] bg-black/80 rounded-full p-2 text-white/70 hover:text-white"
+            className="absolute top-4 right-4 z-[60] bg-black/80 rounded-full p-2 text-white/70 hover:text-white"
           >
              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
           </button>
