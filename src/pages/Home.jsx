@@ -58,7 +58,7 @@ export default function Home() {
   useEffect(() => {
     // Only reset search if we are NOT on a search result page (or optionally keep it)
     if (!q) setSearch("");
-    setTimeout(() => setLoading(true), 0);
+    setLoading(true);
     setExploreResults([]);
     setExplorePage(2); // Page 1 is already in popular row
 
