@@ -56,7 +56,9 @@ export default function Player({ tmdbId, imdbId, type, mediaType, season, episod
           key={streamUrl}
           src={streamUrl}
           className="w-full h-full border-0"
-          allowFullScreen
+          allowFullScreen={true}
+          webkitAllowFullScreen={true}
+          mozallowfullscreen="true"
           allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
           referrerPolicy="origin"
           onLoad={handleLoad}
