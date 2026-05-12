@@ -34,11 +34,10 @@ export default function Player({ tmdbId, imdbId, type, mediaType, season, episod
     if (!id) return;
     setLoading(true);
     
-    const domain = 'vidsrc.me';
-    const idParam = imdbId ? `imdb=${imdbId}` : `tmdb=${tmdbId}`;
+    const domain = 'vidsrc.cc';
     const url = mType === 'movie' 
-      ? `https://${domain}/embed/movie?${idParam}` 
-      : `https://${domain}/embed/tv?${idParam}&season=${season}&episode=${episode}`;
+      ? `https://${domain}/v2/embed/movie/${id}` 
+      : `https://${domain}/v2/embed/tv/${id}/${season}/${episode}`;
       
     setStreamUrl(url);
   }, [id, mType, season, episode, tmdbId, imdbId]);
