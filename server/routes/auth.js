@@ -73,7 +73,10 @@ router.post('/register', validateRegister, async (req, res) => {
     console.log('Response sent successfully');
   } catch (err) {
     console.error('Registration Error Details:', err);
-    res.status(500).json({ message: 'Server error during registration' });
+    res.status(500).json({ 
+      message: 'Server error during registration',
+      error: err.message 
+    });
   }
 });
 

@@ -88,12 +88,6 @@ app.get('/', (req, res) => {
   res.send('Havtic Movie API is running securely...');
 });
 
-// Routes
-app.use('/api/auth', authRoutes);
-app.use('/api/user', userRoutes);
-app.use('/api/tmdb', tmdbRoutes);
-app.use('/api/stream', streamcheckRoutes);
-
 // Connect to MongoDB (Serverless optimized)
 const connectDB = async () => {
   if (mongoose.connection.readyState >= 1) return;
@@ -102,9 +96,25 @@ const connectDB = async () => {
     console.log('✅ MongoDB connected successfully');
   } catch (err) {
     console.error('❌ MongoDB connection error:', err);
+    throw err;
   }
 };
-connectDB();
+
+// Ensure DB is connected before handling API requests
+app.use('/api', async (req, res, next) => {
+  try {
+    await connectDB();
+    next();
+  } catch (err) {
+    res.status(500).json({ message: 'Database connection failed', error: err.message });
+  }
+});
+
+// Routes
+app.use('/api/auth', authRoutes);
+app.use('/api/user', userRoutes);
+app.use('/api/tmdb', tmdbRoutes);
+app.use('/api/stream', streamcheckRoutes);
 
 // Export the express app for Vercel Serverless Functions
 export default app;
