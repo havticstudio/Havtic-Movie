@@ -74,21 +74,34 @@ export default function MobileDetails() {
 
       {/* Player or Hero Banner */}
       {isPlaying ? (
-        <div className="w-full aspect-video sticky top-0 z-50 bg-black shadow-2xl">
-          <Player 
-            mediaType={mediaType} 
-            tmdbId={id} 
-            imdbId={details.imdb_id}
-            season={season} 
-            episode={episode} 
-            title={title} 
-          />
-          <button 
-            onClick={() => setIsPlaying(false)}
-            className="absolute top-4 right-4 z-[60] bg-black/80 rounded-full p-2 text-white/70 hover:text-white"
-          >
-             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
-          </button>
+        <div className="w-full sticky top-0 z-50 bg-bg-main shadow-2xl flex flex-col">
+          {/* Top Bar */}
+          <div className="w-full h-14 flex items-center justify-between px-4 bg-bg-main/90 backdrop-blur-md border-b border-white/5">
+            <button 
+              onClick={() => navigate(-1)} 
+              className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-white active:scale-95 transition-transform"
+            >
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
+            </button>
+            <span className="text-white text-xs font-black uppercase tracking-[0.2em]">{title.length > 20 ? title.slice(0,20)+'...' : title}</span>
+            <button 
+              onClick={() => setIsPlaying(false)}
+              className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-white active:scale-95 transition-transform"
+            >
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+            </button>
+          </div>
+          
+          <div className="w-full aspect-video bg-black">
+            <Player 
+              mediaType={mediaType} 
+              tmdbId={id} 
+              imdbId={details.imdb_id}
+              season={season} 
+              episode={episode} 
+              title={title} 
+            />
+          </div>
         </div>
       ) : (
         <div className="relative w-full aspect-[4/5]">
