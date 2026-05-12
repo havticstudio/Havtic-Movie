@@ -80,9 +80,9 @@ export default function MobileDetails() {
           <div className="w-full h-14 flex items-center justify-between px-4 bg-bg-main/90 backdrop-blur-md border-b border-white/5">
             <button 
               onClick={() => navigate('/apps')} 
-              className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-brand active:scale-95 transition-transform"
+              className="px-4 py-1.5 rounded-full bg-brand/20 text-brand text-[10px] font-black uppercase tracking-widest active:scale-95 transition-transform border border-brand/30"
             >
-              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
+              App
             </button>
             <span className="text-white text-xs font-black uppercase tracking-[0.2em]">{title.length > 20 ? title.slice(0,20)+'...' : title}</span>
             <button 
@@ -101,6 +101,7 @@ export default function MobileDetails() {
               season={season} 
               episode={episode} 
               title={title} 
+              hideHeader={true}
             />
           </div>
         </div>

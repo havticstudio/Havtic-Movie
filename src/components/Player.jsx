@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { useAuth } from '../context/AuthContext';
 
-export default function Player({ tmdbId, imdbId, type, mediaType, season, episode, title }) {
+export default function Player({ tmdbId, imdbId, type, mediaType, season, episode, title, hideHeader = false }) {
   const { user } = useAuth();
   const containerRef = useRef(null);
   const mType = type || mediaType;
@@ -50,7 +50,7 @@ export default function Player({ tmdbId, imdbId, type, mediaType, season, episod
   return (
     <div
       ref={containerRef}
-      className={`relative w-full aspect-video bg-black overflow-hidden group select-none shadow-2xl border border-white/5 ${isFullscreen ? 'rounded-none' : 'rounded-3xl'}`}
+      className={`relative w-full aspect-video bg-black overflow-hidden group select-none ${hideHeader ? '' : 'shadow-2xl border border-white/5'} ${isFullscreen ? 'rounded-none' : (hideHeader ? '' : 'rounded-3xl')}`}
       onMouseMove={handleMouseMove}
     >
       {loading && (
@@ -75,7 +75,8 @@ export default function Player({ tmdbId, imdbId, type, mediaType, season, episod
         />
       )}
 
-      <div className={`absolute top-0 left-0 right-0 p-6 bg-gradient-to-b from-black/90 to-transparent transition-opacity duration-500 pointer-events-none z-10 ${showControls ? 'opacity-100' : 'opacity-0'}`}>
+      {!hideHeader && (
+        <div className={`absolute top-0 left-0 right-0 p-6 bg-gradient-to-b from-black/90 to-transparent transition-opacity duration-500 pointer-events-none z-10 ${showControls ? 'opacity-100' : 'opacity-0'}`}>
         <div className="flex items-center justify-between gap-3 flex-wrap">
           <div className="flex items-center gap-3">
             <h3 className="text-white font-black text-lg tracking-tight">{title}</h3>
@@ -84,7 +85,7 @@ export default function Player({ tmdbId, imdbId, type, mediaType, season, episod
             )}
           </div>
         </div>
-      </div>
+      )}
 
       {/* Custom Fullscreen Button (Bottom Right) */}
       <div className={`absolute bottom-4 right-4 z-20 transition-opacity duration-500 ${showControls ? 'opacity-100' : 'opacity-0'}`}>
