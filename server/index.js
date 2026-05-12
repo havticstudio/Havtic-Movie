@@ -94,10 +94,17 @@ app.use('/api/user', userRoutes);
 app.use('/api/tmdb', tmdbRoutes);
 app.use('/api/stream', streamcheckRoutes);
 
-// Connect to MongoDB
-mongoose.connect(process.env.MONGODB_URI)
-  .then(() => console.log('✅ MongoDB connected successfully'))
-  .catch(err => console.error('❌ MongoDB connection error:', err));
+// Connect to MongoDB (Serverless optimized)
+const connectDB = async () => {
+  if (mongoose.connection.readyState >= 1) return;
+  try {
+    await mongoose.connect(process.env.MONGODB_URI);
+    console.log('✅ MongoDB connected successfully');
+  } catch (err) {
+    console.error('❌ MongoDB connection error:', err);
+  }
+};
+connectDB();
 
 // Export the express app for Vercel Serverless Functions
 export default app;

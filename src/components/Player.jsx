@@ -100,7 +100,6 @@ export default function Player({ tmdbId, imdbId, type, mediaType, season, episod
           allowFullScreen
           allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
           referrerPolicy="origin"
-          sandbox="allow-forms allow-pointer-lock allow-same-origin allow-scripts allow-top-navigation allow-presentation allow-popups allow-popups-to-escape-sandbox"
           onLoad={handleLoad}
           title={title}
         />
