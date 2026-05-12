@@ -78,14 +78,21 @@ export default function Home() {
       fetchTrending = getTrendingTVShows();
     }
 
-    Promise.all([fetchPopular, fetchTopRated, fetchTrending])
+    Promise.allSettled([fetchPopular, fetchTopRated, fetchTrending])
       .then(([pop, top, trend]) => {
-        setSliderItems(trend.slice(0, 5));
-        setPopular(pop);
-        setTopRated(top);
-        setTrending(trend);
+        if (pop.status === 'fulfilled') setPopular(pop.value);
+        else console.error('Popular fetch failed:', pop.reason);
+        
+        if (top.status === 'fulfilled') setTopRated(top.value);
+        else console.error('Top Rated fetch failed:', top.reason);
+        
+        if (trend.status === 'fulfilled') {
+          setTrending(trend.value);
+          setSliderItems(trend.value.slice(0, 5));
+        } else {
+          console.error('Trending fetch failed:', trend.reason);
+        }
       })
-      .catch(console.error)
       .finally(() => setLoading(false));
   }, [activeTab]);
 
