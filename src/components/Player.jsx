@@ -20,10 +20,10 @@ export default function Player({ tmdbId, imdbId, type, mediaType, season, episod
     if (!id) return;
     setLoading(true);
 
-    const domain = 'embed.su';
+    const domain = 'vidsrc.cc';
     const url = mType === 'movie'
-      ? `https://${domain}/embed/movie/${id}`
-      : `https://${domain}/embed/tv/${id}/${season}/${episode}`;
+      ? `https://${domain}/v2/embed/movie/${id}`
+      : `https://${domain}/v2/embed/tv/${id}/${season}/${episode}`;
 
     setStreamUrl(url);
   }, [id, mType, season, episode, tmdbId, imdbId]);
