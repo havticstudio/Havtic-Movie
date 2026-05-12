@@ -14,7 +14,11 @@ const tmdbFetch = async (path, params = {}) => {
   }
 
   const res = await fetch(cacheKey);
-  if (!res.ok) throw new Error(`TMDB error: ${res.status}`);
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({}));
+    console.error('TMDB Fetch Error:', errorData);
+    throw new Error(`TMDB error: ${res.status} - ${errorData.message || errorData.error || 'Unknown error'}`);
+  }
   const data = await res.json();
   
   // Save to sessionStorage

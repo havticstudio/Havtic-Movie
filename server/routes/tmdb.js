@@ -29,7 +29,13 @@ router.use(async (req, res) => {
     res.json(response.data);
   } catch (error) {
     console.error(`[TMDB Proxy] Error fetching ${BASE_URL}${path}:`, error.response?.data || error.message);
-    res.status(error.response?.status || 500).json(error.response?.data || { message: 'Internal Server Error' });
+    res.status(error.response?.status || 500).json({
+      message: 'TMDB Proxy Error',
+      error: error.message,
+      path: path,
+      fullUrl: `${BASE_URL}${path}`,
+      tmdbData: error.response?.data
+    });
   }
 });
 
