@@ -12,8 +12,17 @@ export default function Player({ tmdbId, imdbId, type, mediaType, season, episod
   const [streamUrl, setStreamUrl] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showControls, setShowControls] = useState(true);
+  const [isFullscreen, setIsFullscreen] = useState(false);
 
   const controlTimer = useRef(null);
+
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      setIsFullscreen(!!document.fullscreenElement);
+    };
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+    return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
+  }, []);
 
 
   useEffect(() => {
@@ -41,7 +50,7 @@ export default function Player({ tmdbId, imdbId, type, mediaType, season, episod
   return (
     <div
       ref={containerRef}
-      className="relative w-full aspect-video bg-black rounded-3xl overflow-hidden group select-none shadow-2xl border border-white/5"
+      className={`relative w-full aspect-video bg-black overflow-hidden group select-none shadow-2xl border border-white/5 ${isFullscreen ? 'rounded-none' : 'rounded-3xl'}`}
       onMouseMove={handleMouseMove}
     >
       {loading && (
@@ -74,6 +83,24 @@ export default function Player({ tmdbId, imdbId, type, mediaType, season, episod
               <span className="bg-brand text-white text-[10px] font-black px-2 py-0.5 rounded-md">S{season} E{episode}</span>
             )}
           </div>
+          <button 
+            onClick={(e) => {
+              e.stopPropagation();
+              if (!document.fullscreenElement) {
+                containerRef.current?.requestFullscreen().catch(err => console.log(err));
+              } else {
+                document.exitFullscreen().catch(err => console.log(err));
+              }
+            }}
+            className="pointer-events-auto w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-brand transition-colors cursor-pointer"
+            title="Toggle Fullscreen"
+          >
+            {isFullscreen ? (
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 3v3a2 2 0 01-2 2H3m18 0h-3a2 2 0 01-2-2V3m0 18v-3a2 2 0 012-2h3M3 16h3a2 2 0 012 2v3" /></svg>
+            ) : (
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" /></svg>
+            )}
+          </button>
         </div>
       </div>
     </div>
