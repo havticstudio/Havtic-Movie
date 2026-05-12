@@ -5,7 +5,8 @@ const tmdbFetch = async (path, params = {}) => {
   const url = new URL(`${window.location.origin}${BASE_URL}${path}`);  
   Object.entries(params).forEach(([k, v]) => url.searchParams.set(k, v));
   
-  const cacheKey = url.toString();
+  const urlString = url.toString();
+  const cacheKey = "havtic_v1_" + urlString;
   
   // Check sessionStorage
   const cachedData = sessionStorage.getItem(cacheKey);
@@ -13,7 +14,7 @@ const tmdbFetch = async (path, params = {}) => {
     return JSON.parse(cachedData);
   }
 
-  const res = await fetch(cacheKey);
+  const res = await fetch(urlString);
   if (!res.ok) {
     const errorData = await res.json().catch(() => ({}));
     console.error('TMDB Fetch Error:', errorData);
