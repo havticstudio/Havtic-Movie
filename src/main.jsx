@@ -2,6 +2,8 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import "./index.css";
+import { Analytics } from "@vercel/analytics/react"
+import { SpeedInsights } from "@vercel/speed-insights/react"
 import App from "./App.jsx";
 import Home from "./pages/Home.jsx";
 import Genres from "./pages/Genres.jsx";
@@ -100,7 +102,13 @@ const MobileRouter = createBrowserRouter(mobileRoutes);
 
 function RootApp() {
   const isMobile = useMobile();
-  return <RouterProvider router={isMobile ? MobileRouter : DesktopRouter} />;
+  return (
+    <>
+      <RouterProvider router={isMobile ? MobileRouter : DesktopRouter} />
+      <SpeedInsights />
+      <Analytics />
+    </>
+  );
 }
 
 createRoot(document.getElementById("root")).render(
